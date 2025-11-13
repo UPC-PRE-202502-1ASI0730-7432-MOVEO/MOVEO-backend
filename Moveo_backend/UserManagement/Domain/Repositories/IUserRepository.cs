@@ -1,6 +1,5 @@
 using Moveo_backend.UserManagement.Domain.Model.Aggregates;
 
-
 namespace Moveo_backend.UserManagement.Domain.Repositories;
 
 public interface IUserRepository

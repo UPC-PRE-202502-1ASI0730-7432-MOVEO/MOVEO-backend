@@ -33,4 +33,9 @@
         <PackageReference Include="Cortex.Mediator" Version="2.1.0"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Rental\Domain\Model\Entity\" />
+      <Folder Include="Rental\Infrastructure\Persistence\EFC\Repository\" />
+    </ItemGroup>
+
 </Project>
