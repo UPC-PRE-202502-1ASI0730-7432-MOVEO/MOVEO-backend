@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hBL6AWPQfRo=",
+  "dgSpecHash": "ybr0LOkBSHM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\u\\RiderProjects\\Moveo_backend\\Moveo_backend\\Moveo_backend.csproj",
+  "projectFilePath": "C:\\UNI\\2025-20\\Apps Web\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\u\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\u\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
