@@ -15,6 +15,38 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// ------------------------- CORS -------------------------
+var corsPolicyName = "AllowMoveoFrontend";
+if (builder.Environment.IsDevelopment())
+{
+    // Development: allow any origin to simplify frontend testing
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(corsPolicyName, policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+    });
+}
+else
+{
+    // Production: allow only specific origins (add your frontend URL(s) here)
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(corsPolicyName, policy =>
+        {
+            policy.WithOrigins(
+                    "http://localhost:5173",
+                    "https://moveo-backend-production.up.railway.app"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+    });
+}
+
 // ------------------------- DbContext & MySQL -------------------------
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -56,6 +88,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // ------------------------- Middleware -------------------------
+app.UseCors(corsPolicyName);
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
