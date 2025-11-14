@@ -127,3 +127,5 @@ C:\UNI\2025-20\Apps Web\MOVEO-backend\Moveo_backend\obj\Debug\net9.0\refint\Move
 C:\UNI\2025-20\Apps Web\MOVEO-backend\Moveo_backend\obj\Debug\net9.0\Moveo_backend.pdb
 C:\UNI\2025-20\Apps Web\MOVEO-backend\Moveo_backend\obj\Debug\net9.0\Moveo_backend.genruntimeconfig.cache
 C:\UNI\2025-20\Apps Web\MOVEO-backend\Moveo_backend\obj\Debug\net9.0\ref\Moveo_backend.dll
+C:\UNI\2025-20\Apps Web\MOVEO-backend\Moveo_backend\bin\Debug\net9.0\MySqlConnector.dll
+C:\UNI\2025-20\Apps Web\MOVEO-backend\Moveo_backend\bin\Debug\net9.0\Pomelo.EntityFrameworkCore.MySql.dll

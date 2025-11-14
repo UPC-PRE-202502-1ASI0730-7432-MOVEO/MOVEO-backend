@@ -1,86 +1,115 @@
-using Moveo_backend.UserManagement.Domain.Model.Commands;
-using Moveo_backend.UserManagement.Domain.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moveo_backend.Rental.Domain.Model.Commands;
+using Moveo_backend.Shared.Infrastructure.Persistence.EFC.Configuration;
+using Moveo_backend.UserManagement.Domain.Services;
 using Moveo_backend.Rental.Domain.Services;
 using Moveo_backend.Rental.Domain.Repositories;
-using Moveo_backend.Rental.Domain.Model.Aggregates;
-using Microsoft.AspNetCore.Mvc;
+using Moveo_backend.Rental.Infrastructure.Persistence.EFC.Repository;
+using Moveo_backend.UserManagement.Domain.Model.Commands;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddEndpointsApiExplorer(); // para minimal APIs
-builder.Services.AddSwaggerGen();           // para generar documentación OpenAPI
+// ------------------------- Services & Swagger -------------------------
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// ------------------------- DbContext & MySQL -------------------------
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrEmpty(connectionString))
+        throw new Exception("Database connection string is not set.");
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+           .LogTo(Console.WriteLine, LogLevel.Information)
+           .EnableSensitiveDataLogging()
+           .EnableDetailedErrors();
+});
+
+// ------------------------- Dependency Injection -------------------------
 builder.Services.AddSingleton<IUserService, UserService>();
-builder.Services.AddSingleton<IVehicleService, VehicleService>();
-builder.Services.AddSingleton<IRentalService, RentalService>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+builder.Services.AddScoped<IRentalRepository, RentalRepository>();
+builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<IRentalService, RentalService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// ------------------------- Ensure Database Created -------------------------
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();      // activa Swagger JSON
-    app.UseSwaggerUI();    // activa la interfaz web
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    try
+    {
+        db.Database.EnsureCreated();
+        Console.WriteLine("✅ Base de datos y tablas creadas correctamente (si no existían).");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("❌ Error al crear la base de datos o las tablas:");
+        Console.WriteLine(ex.Message);
+        if (ex.InnerException != null)
+            Console.WriteLine($"InnerException: {ex.InnerException.Message}");
+        throw; // re-lanza para que la app no siga corriendo con fallo crítico
+    }
 }
 
+// ------------------------- Middleware -------------------------
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
-// Obtener todos los usuarios
+// ------------------------- USERS Endpoints -------------------------
 app.MapGet("/api/v1/users", async ([FromServices] IUserService userService) =>
-    {
-        var users = await userService.GetAllUsersAsync();
-        return Results.Ok(users);
-    })
-    .WithName("GetUsers")
-    .WithTags("Users");
+{
+    var users = await userService.GetAllUsersAsync();
+    return Results.Ok(users);
+})
+.WithName("GetUsers")
+.WithTags("Users");
 
-// Crear un usuario
 app.MapPost("/api/v1/users", async ([FromBody] CreateUserCommand command, [FromServices] IUserService userService) =>
-    {
-        var createdUser = await userService.CreateUserAsync(command);
-        return Results.Created($"/api/v1/users/{createdUser.Id}", createdUser);
-    })
-    .WithName("CreateUser")
-    .WithTags("Users");
+{
+    var createdUser = await userService.CreateUserAsync(command);
+    return Results.Created($"/api/v1/users/{createdUser.Id}", createdUser);
+})
+.WithName("CreateUser")
+.WithTags("Users");
 
-// Actualizar un usuario
 app.MapPut("/api/v1/users/{id:int}", async (int id, [FromBody] UpdateUserCommand command, [FromServices] IUserService userService) =>
-    {
-        var updatedUser = await userService.UpdateUserAsync(id, command);
-        return updatedUser != null ? Results.Ok(updatedUser) : Results.NotFound();
-    })
-    .WithName("UpdateUser")
-    .WithTags("Users");
+{
+    var updatedUser = await userService.UpdateUserAsync(id, command);
+    return updatedUser != null ? Results.Ok(updatedUser) : Results.NotFound();
+})
+.WithName("UpdateUser")
+.WithTags("Users");
 
-// Cambiar contraseña
 app.MapPut("/api/v1/users/{id:int}/password", async (int id, [FromBody] ChangePasswordCommand command, [FromServices] IUserService userService) =>
-    {
-        var success = await userService.ChangePasswordAsync(id, command);
-        return success ? Results.NoContent() : Results.NotFound();
-    })
-    .WithName("ChangeUserPassword")
-    .WithTags("Users");
+{
+    var success = await userService.ChangePasswordAsync(id, command);
+    return success ? Results.NoContent() : Results.NotFound();
+})
+.WithName("ChangeUserPassword")
+.WithTags("Users");
 
-// Cambiar rol
 app.MapPut("/api/v1/users/{id:int}/role", async (int id, [FromBody] ChangeUserRoleCommand command, [FromServices] IUserService userService) =>
-    {
-        var success = await userService.ChangeUserRoleAsync(id, command);
-        return success ? Results.NoContent() : Results.NotFound();
-    })
-    .WithName("ChangeUserRole")
-    .WithTags("Users");
+{
+    var success = await userService.ChangeUserRoleAsync(id, command);
+    return success ? Results.NoContent() : Results.NotFound();
+})
+.WithName("ChangeUserRole")
+.WithTags("Users");
 
-// Eliminar usuario
 app.MapDelete("/api/v1/users/{id:int}", async (int id, [FromServices] IUserService userService) =>
-    {
-        var deleted = await userService.DeleteUserAsync(id);
-        return deleted ? Results.NoContent() : Results.NotFound();
-    })
-    .WithName("DeleteUser")
-    .WithTags("Users");
+{
+    var deleted = await userService.DeleteUserAsync(id);
+    return deleted ? Results.NoContent() : Results.NotFound();
+})
+.WithName("DeleteUser")
+.WithTags("Users");
 
-// -------------------- VEHICLES --------------------
-// Obtener todos los vehículos
+// ------------------------- VEHICLES Endpoints -------------------------
 app.MapGet("/api/v1/vehicles", async ([FromServices] IVehicleService vehicleService) =>
 {
     var vehicles = await vehicleService.GetAllAsync();
@@ -89,7 +118,6 @@ app.MapGet("/api/v1/vehicles", async ([FromServices] IVehicleService vehicleServ
 .WithName("GetVehicles")
 .WithTags("Vehicles");
 
-// Crear un vehículo
 app.MapPost("/api/v1/vehicles", async ([FromBody] CreateVehicleCommand command, [FromServices] IVehicleService vehicleService) =>
 {
     var vehicle = await vehicleService.CreateVehicleAsync(command);
@@ -98,7 +126,6 @@ app.MapPost("/api/v1/vehicles", async ([FromBody] CreateVehicleCommand command, 
 .WithName("CreateVehicle")
 .WithTags("Vehicles");
 
-// Actualizar vehículo
 app.MapPut("/api/v1/vehicles/{id:guid}", async (Guid id, [FromBody] UpdateVehicleCommand command, [FromServices] IVehicleService vehicleService) =>
 {
     var updatedCommand = command with { Id = id };
@@ -108,7 +135,6 @@ app.MapPut("/api/v1/vehicles/{id:guid}", async (Guid id, [FromBody] UpdateVehicl
 .WithName("UpdateVehicle")
 .WithTags("Vehicles");
 
-// Eliminar vehículo
 app.MapDelete("/api/v1/vehicles/{id:guid}", async (Guid id, [FromServices] IVehicleService vehicleService) =>
 {
     var deleted = await vehicleService.DeleteVehicleAsync(id);
@@ -117,8 +143,7 @@ app.MapDelete("/api/v1/vehicles/{id:guid}", async (Guid id, [FromServices] IVehi
 .WithName("DeleteVehicle")
 .WithTags("Vehicles");
 
-// -------------------- RENTALS --------------------
-// Obtener todos los rentals
+// ------------------------- RENTALS Endpoints -------------------------
 app.MapGet("/api/v1/rentals", async ([FromServices] IRentalService rentalService) =>
 {
     var rentals = await rentalService.GetAllAsync();
@@ -127,7 +152,6 @@ app.MapGet("/api/v1/rentals", async ([FromServices] IRentalService rentalService
 .WithName("GetRentals")
 .WithTags("Rentals");
 
-// Crear rental
 app.MapPost("/api/v1/rentals", async ([FromBody] CreateRentalCommand command, [FromServices] IRentalService rentalService) =>
 {
     var rental = await rentalService.CreateRentalAsync(command);
@@ -136,27 +160,24 @@ app.MapPost("/api/v1/rentals", async ([FromBody] CreateRentalCommand command, [F
 .WithName("CreateRental")
 .WithTags("Rentals");
 
-// Actualizar rental
 app.MapPut("/api/v1/rentals/{id:guid}", async (Guid id, [FromBody] UpdateRentalCommand command, [FromServices] IRentalService rentalService) =>
 {
-    var updatedCommand = command with { Id = id }; // aseguramos que el comando tenga el Id de la URL
+    var updatedCommand = command with { Id = id };
     var updated = await rentalService.UpdateRentalAsync(updatedCommand);
     return updated != null ? Results.Ok(updated) : Results.NotFound();
 })
 .WithName("UpdateRental")
 .WithTags("Rentals");
 
-// Cancelar rental
 app.MapPut("/api/v1/rentals/{id:guid}/cancel", async (Guid id, [FromBody] CancelRentalCommand command, [FromServices] IRentalService rentalService) =>
 {
-    var updatedCommand = command with { Id = id }; // aseguramos que el comando tenga el Id de la URL
+    var updatedCommand = command with { Id = id };
     var success = await rentalService.CancelRentalAsync(updatedCommand);
     return success ? Results.NoContent() : Results.NotFound();
 })
 .WithName("CancelRental")
 .WithTags("Rentals");
 
-// Terminar rental
 app.MapPut("/api/v1/rentals/{id:guid}/finish", async (Guid id, [FromBody] FinishRentalCommand command, [FromServices] IRentalService rentalService) =>
 {
     var updatedCommand = command with { Id = id };

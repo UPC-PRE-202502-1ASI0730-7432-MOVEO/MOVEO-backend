@@ -1,41 +1,43 @@
 using Moveo_backend.Rental.Domain.Model.Aggregates;
 using Moveo_backend.Rental.Domain.Model.Commands;
-using Moveo_backend.Rental.Domain.Model.ValueObjects;
-using Moveo_backend.Rental.Domain.Services;
+using Moveo_backend.Rental.Domain.Repositories;
 
 namespace Moveo_backend.Rental.Domain.Services;
 
 public class RentalService : IRentalService
 {
-    private readonly List<Model.Aggregates.Rental> _rentals = new();
-    private readonly IVehicleService _vehicleService; // para validaciones
+    private readonly IRentalRepository _rentalRepository;
+    private readonly IVehicleRepository _vehicleRepository;
 
-    public RentalService(IVehicleService vehicleService)
+    public RentalService(IRentalRepository rentalRepository, IVehicleRepository vehicleRepository)
     {
-        _vehicleService = vehicleService;
+        _rentalRepository = rentalRepository;
+        _vehicleRepository = vehicleRepository;
     }
 
-    public Task<IEnumerable<Model.Aggregates.Rental>> GetAllAsync() => Task.FromResult(_rentals.AsEnumerable());
+    public Task<IEnumerable<Model.Aggregates.Rental>> GetAllAsync() =>
+        _rentalRepository.GetAllAsync();
 
     public Task<IEnumerable<Model.Aggregates.Rental>> GetActiveAsync() =>
-        Task.FromResult(_rentals.Where(r => r.Status == "Active").AsEnumerable());
+        _rentalRepository.GetActiveAsync();
 
     public Task<Model.Aggregates.Rental?> GetByIdAsync(Guid id) =>
-        Task.FromResult(_rentals.FirstOrDefault(r => r.Id == id));
+        _rentalRepository.GetByIdAsync(id);
 
     public Task<IEnumerable<Model.Aggregates.Rental>> GetByUserIdAsync(Guid userId) =>
-        Task.FromResult(_rentals.Where(r => r.RenterId == userId || r.OwnerId == userId).AsEnumerable());
+        _rentalRepository.GetByUserIdAsync(userId);
 
     public Task<bool> IsVehicleCurrentlyRentedAsync(Guid vehicleId) =>
-        Task.FromResult(_rentals.Any(r => r.VehicleId == vehicleId && r.Status == "Active"));
+        _rentalRepository.IsVehicleCurrentlyRentedAsync(vehicleId);
 
     public async Task<Model.Aggregates.Rental> CreateRentalAsync(CreateRentalCommand command)
     {
-        var vehicle = await _vehicleService.GetByIdAsync(command.VehicleId);
+        var vehicle = await _vehicleRepository.GetByIdAsync(command.VehicleId);
         if (vehicle == null)
             throw new InvalidOperationException("Vehicle not found");
 
-        if (_rentals.Any(r => r.VehicleId == command.VehicleId && r.Status == "Active"))
+        var isRented = await _rentalRepository.IsVehicleCurrentlyRentedAsync(command.VehicleId);
+        if (isRented)
             throw new InvalidOperationException("Vehicle is currently rented");
 
         var rental = new Model.Aggregates.Rental(
@@ -49,34 +51,37 @@ public class RentalService : IRentalService
             command.Notes
         );
 
-        _rentals.Add(rental);
+        await _rentalRepository.AddAsync(rental);
         return rental;
     }
 
-    public Task<Model.Aggregates.Rental?> UpdateRentalAsync(UpdateRentalCommand command)
+    public async Task<Model.Aggregates.Rental?> UpdateRentalAsync(UpdateRentalCommand command)
     {
-        var rental = _rentals.FirstOrDefault(r => r.Id == command.Id);
-        if (rental == null) return Task.FromResult<Model.Aggregates.Rental?>(null);
+        var rental = await _rentalRepository.GetByIdAsync(command.Id);
+        if (rental == null) return null;
 
         rental.UpdateTotalPrice(command.TotalPrice);
-        return Task.FromResult(rental);
+        await _rentalRepository.UpdateAsync(rental);
+        return rental;
     }
 
-    public Task<bool> CancelRentalAsync(CancelRentalCommand command)
+    public async Task<bool> CancelRentalAsync(CancelRentalCommand command)
     {
-        var rental = _rentals.FirstOrDefault(r => r.Id == command.Id);
-        if (rental == null) return Task.FromResult(false);
+        var rental = await _rentalRepository.GetByIdAsync(command.Id);
+        if (rental == null) return false;
 
         rental.CancelRental(command.Reason);
-        return Task.FromResult(true);
+        await _rentalRepository.UpdateAsync(rental);
+        return true;
     }
 
-    public Task<bool> FinishRentalAsync(FinishRentalCommand command)
+    public async Task<bool> FinishRentalAsync(FinishRentalCommand command)
     {
-        var rental = _rentals.FirstOrDefault(r => r.Id == command.Id);
-        if (rental == null) return Task.FromResult(false);
+        var rental = await _rentalRepository.GetByIdAsync(command.Id);
+        if (rental == null) return false;
 
         rental.FinishRental();
-        return Task.FromResult(true);
+        await _rentalRepository.UpdateAsync(rental);
+        return true;
     }
 }

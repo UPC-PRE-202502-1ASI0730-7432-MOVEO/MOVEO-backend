@@ -1,20 +1,32 @@
 using Moveo_backend.UserManagement.Domain.Model.ValueObjects;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Moveo_backend.UserManagement.Domain.Model.Aggregates;
 
 public partial class User
 {
+    [Key]
     public int Id { get; }
 
+    [NotMapped] 
     public PersonName Name { get; private set; }
+    
+    [NotMapped] 
     public EmailAddress Email { get; private set; }
+    
+    [NotMapped] 
     public Password Password { get; private set; }
+    
+    [NotMapped] 
     public UserRole Role { get; private set; }
     
     public string Phone { get; private set; }
     public string Dni { get; private set; }
     public string LicenseNumber { get; private set; }
     public string Address { get; private set; }
+    
+    [NotMapped] 
     public UserPreferences Preferences { get; private set; }
 
     public string FullName => Name.FullName;

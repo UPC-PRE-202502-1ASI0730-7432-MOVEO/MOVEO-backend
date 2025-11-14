@@ -5,7 +5,14 @@ public record Location
     public string Address { get; }
     public string? City { get; }
     public string? Country { get; }
-
+    
+    protected Location()
+    {
+        Address = string.Empty;
+        City = string.Empty;
+        Country = string.Empty;
+    }
+    
     public Location(string address, string? city = null, string? country = null)
     {
         if (string.IsNullOrWhiteSpace(address))

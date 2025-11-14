@@ -4,7 +4,9 @@ public record DateRange
 {
     public DateTime StartDate { get; }
     public DateTime EndDate { get; }
-
+    
+    // Constructor vacío para EF Core
+    protected DateRange() { }
     public DateRange(DateTime startDate, DateTime endDate)
     {
         if (endDate <= startDate)
