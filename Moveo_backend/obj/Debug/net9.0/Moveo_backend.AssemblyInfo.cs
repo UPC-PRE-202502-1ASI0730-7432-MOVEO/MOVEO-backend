@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Moveo_backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+db84582514fa446a8621d04906e8132cfe5000a1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e1cc779542652388220088e11ba110fba7c32c8a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Moveo_backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Moveo_backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
