@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\UNI\\2025-20\\Apps Web\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj": {}
+    "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj": {}
   },
   "projects": {
-    "C:\\UNI\\2025-20\\Apps Web\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj": {
+    "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\UNI\\2025-20\\Apps Web\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
+        "projectUniqueName": "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
         "projectName": "Moveo_backend",
-        "projectPath": "C:\\UNI\\2025-20\\Apps Web\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
-        "packagesPath": "C:\\Users\\u\\.nuget\\packages\\",
-        "outputPath": "C:\\UNI\\2025-20\\Apps Web\\MOVEO-backend\\Moveo_backend\\obj\\",
+        "projectPath": "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
+        "packagesPath": "C:\\Users\\goku6\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\u\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\goku6\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -130,7 +130,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
