@@ -1,17 +1,14 @@
 using Moveo_backend.Shared.Domain.Repositories;
 using Moveo_backend.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Microsoft.EntityFrameworkCore;
-using Moveo_backend.Shared.Infrastructure.Persistance.EFC.Configuration.Extensions;
+using Moveo_backend.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace Moveo_backend.Shared.Infrastructure.Persistence.EFC.Repositories;
 
 public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
 {
     protected readonly AppDbContext Context;
-
-    /// <summary>
-    ///     Default constructor for the base repository
-    /// </summary>
+    
     protected BaseRepository(AppDbContext context)
     {
         Context = context;
