@@ -187,4 +187,6 @@ app.MapPut("/api/v1/rentals/{id:guid}/finish", async (Guid id, [FromBody] Finish
 .WithName("FinishRental")
 .WithTags("Rentals");
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{port}");
 app.Run();
