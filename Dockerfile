@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS builder
 WORKDIR /app
-COPY MOVEO-backend/* .csproj MOVEO-backend/
+COPY MOVEO-backend/*.csproj MOVEO-backend/
 RUN dotnet restore ./MOVEO-backend/
 COPY . .
 RUN dotnet publish ./MOVEO-backend -c Release -o out
