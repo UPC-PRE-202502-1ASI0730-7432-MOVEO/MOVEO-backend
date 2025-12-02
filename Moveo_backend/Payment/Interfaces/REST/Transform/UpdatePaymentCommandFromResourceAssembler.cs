@@ -7,17 +7,23 @@ public static class UpdatePaymentCommandFromResourceAssembler
 {
     public static UpdatePaymentCommand ToCommandFromResource(int id, UpdatePaymentResource resource)
     {
+        // Normalize: use PaymentMethod or Method, default to "card"
+        var method = resource.PaymentMethod ?? resource.Method ?? "card";
+        var type = resource.Type ?? "rental_payment";
+        var currency = resource.Currency ?? "PEN";
+        var status = resource.Status ?? "pending";
+        
         return new UpdatePaymentCommand(
             id,
             resource.PayerId,
             resource.RecipientId,
             resource.RentalId,
             resource.Amount,
-            resource.Currency,
-            resource.Method,
-            resource.Status,
+            currency,
+            method,
+            status,
             resource.TransactionId,
-            resource.Type,
+            type,
             resource.Description,
             resource.Reason,
             resource.DueDate,

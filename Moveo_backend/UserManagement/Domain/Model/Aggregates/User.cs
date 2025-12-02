@@ -53,6 +53,10 @@ public partial class User
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; private set; } = DateTime.UtcNow;
+    
+    // Refresh Token para JWT
+    public string? RefreshToken { get; private set; }
+    public DateTime? RefreshTokenExpiryTime { get; private set; }
 
     // Propiedades de navegación (Value Objects como helpers, no mapeados)
     [NotMapped]
@@ -175,6 +179,20 @@ public partial class User
     public void VerifyPhone() { PhoneVerified = true; UpdatedAt = DateTime.UtcNow; }
     public void VerifyDni() { DniVerified = true; UpdatedAt = DateTime.UtcNow; }
     public void VerifyLicense() { LicenseVerified = true; UpdatedAt = DateTime.UtcNow; }
+    
+    public void SetRefreshToken(string token, DateTime expiryTime)
+    {
+        RefreshToken = token;
+        RefreshTokenExpiryTime = expiryTime;
+        UpdatedAt = DateTime.UtcNow;
+    }
+    
+    public void ClearRefreshToken()
+    {
+        RefreshToken = null;
+        RefreshTokenExpiryTime = null;
+        UpdatedAt = DateTime.UtcNow;
+    }
     
     public void IncrementActiveRentals() { ActiveRentals++; TotalRentals++; UpdatedAt = DateTime.UtcNow; }
     public void CompleteRental(decimal amount, bool isOwner) 
