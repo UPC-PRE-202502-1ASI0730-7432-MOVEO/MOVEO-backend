@@ -12,7 +12,6 @@ using Moveo_backend.UserManagement.Interfaces.REST.Transform;
 namespace Moveo_backend.UserManagement.Interfaces.REST;
 
 [ApiController]
-[Route("users")]
 [Route("api/v1/users")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available User Endpoints")]

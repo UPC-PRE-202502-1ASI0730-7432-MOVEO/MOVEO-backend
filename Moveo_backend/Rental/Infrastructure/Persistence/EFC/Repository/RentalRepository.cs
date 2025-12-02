@@ -51,6 +51,6 @@ public class RentalRepository : IRentalRepository
         }
     }
 
-    public Task<bool> IsVehicleCurrentlyRentedAsync(Guid vehicleId) =>
+    public Task<bool> IsVehicleCurrentlyRentedAsync(int vehicleId) =>
         _context.Rentals.AnyAsync(r => r.VehicleId == vehicleId && r.Status == "Active");
 }

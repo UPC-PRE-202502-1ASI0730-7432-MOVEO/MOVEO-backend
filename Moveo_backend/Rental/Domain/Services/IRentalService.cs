@@ -15,5 +15,5 @@ public interface IRentalService
     Task<bool> CancelRentalAsync(CancelRentalCommand command);
     Task<bool> FinishRentalAsync(FinishRentalCommand command);
 
-    Task<bool> IsVehicleCurrentlyRentedAsync(Guid vehicleId);
+    Task<bool> IsVehicleCurrentlyRentedAsync(int vehicleId);
 }

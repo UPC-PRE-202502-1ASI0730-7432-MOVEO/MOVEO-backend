@@ -14,8 +14,8 @@ public static class CreateRentalCommandFromResourceAssembler
             resource.OwnerId,
             new DateRange(resource.StartDate, resource.EndDate),
             new Money(resource.TotalPrice),
-            new Location(resource.PickupLocation),
-            new Location(resource.ReturnLocation),
+            new Location("", resource.PickupLocation, 0, 0),
+            new Location("", resource.ReturnLocation, 0, 0),
             resource.Notes
         );
     }

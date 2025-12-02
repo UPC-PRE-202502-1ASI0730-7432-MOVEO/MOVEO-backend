@@ -3,7 +3,7 @@ using Moveo_backend.Rental.Domain.Model.ValueObjects;
 namespace Moveo_backend.Rental.Domain.Model.Commands;
 
 public record CreateRentalCommand(
-    Guid VehicleId,
+    int VehicleId,
     Guid RenterId,
     Guid OwnerId,
     DateRange RentalPeriod,

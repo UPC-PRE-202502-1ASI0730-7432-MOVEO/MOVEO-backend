@@ -13,7 +13,12 @@ public class VehicleQueryService
     }
 
     public Task<IEnumerable<Vehicle>> GetAllAsync() => _vehicleService.GetAllAsync();
-    public Task<Vehicle?> GetByIdAsync(Guid id) => _vehicleService.GetByIdAsync(id);
-    public Task<IEnumerable<Vehicle>> GetAvailableVehiclesAsync() => _vehicleService.GetAvailableVehiclesAsync();
-    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(Guid ownerId) => _vehicleService.GetByOwnerIdAsync(ownerId);
+    public Task<Vehicle?> GetByIdAsync(int id) => _vehicleService.GetByIdAsync(id);
+    public Task<IEnumerable<Vehicle>> GetFilteredAsync(
+        int? ownerId = null,
+        string? status = null,
+        decimal? minPrice = null,
+        decimal? maxPrice = null,
+        string? district = null) => _vehicleService.GetFilteredAsync(ownerId, status, minPrice, maxPrice, district);
+    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId) => _vehicleService.GetByOwnerIdAsync(ownerId);
 }

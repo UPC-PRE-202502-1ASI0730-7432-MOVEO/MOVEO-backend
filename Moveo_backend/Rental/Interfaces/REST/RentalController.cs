@@ -7,12 +7,12 @@ using Moveo_backend.Rental.Interfaces.REST.Transform;
 namespace Moveo_backend.Rental.Interfaces.REST;
 
 [ApiController]
-[Route("api/[controller]")]
-public class RentalController : ControllerBase
+[Route("api/v1/rentals")]
+public class RentalsController : ControllerBase
 {
     private readonly IRentalService _rentalService;
 
-    public RentalController(IRentalService rentalService)
+    public RentalsController(IRentalService rentalService)
     {
         _rentalService = rentalService;
     }
@@ -48,8 +48,8 @@ public class RentalController : ControllerBase
             resource.OwnerId,
             new Domain.Model.ValueObjects.DateRange(resource.StartDate, resource.EndDate),
             new Domain.Model.ValueObjects.Money(resource.TotalPrice),
-            new Domain.Model.ValueObjects.Location(resource.PickupLocation),
-            new Domain.Model.ValueObjects.Location(resource.ReturnLocation),
+            new Domain.Model.ValueObjects.Location("", resource.PickupLocation, 0, 0),
+            new Domain.Model.ValueObjects.Location("", resource.ReturnLocation, 0, 0),
             resource.Notes
         );
 

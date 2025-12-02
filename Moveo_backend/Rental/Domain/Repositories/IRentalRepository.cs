@@ -13,6 +13,6 @@ public interface IRentalRepository
     Task UpdateAsync(Model.Aggregates.Rental rental);
     Task DeleteAsync(Guid id);
 
-    Task<bool> IsVehicleCurrentlyRentedAsync(Guid vehicleId);
+    Task<bool> IsVehicleCurrentlyRentedAsync(int vehicleId);
     
 }

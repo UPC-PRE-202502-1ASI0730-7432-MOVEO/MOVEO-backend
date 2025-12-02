@@ -73,11 +73,16 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Vehicle>(entity =>
         {
             entity.HasKey(v => v.Id);
+            entity.Property(v => v.Id).ValueGeneratedOnAdd();
             entity.Property(v => v.Brand).IsRequired();
             entity.Property(v => v.Model).IsRequired();
             entity.Property(v => v.Transmission).IsRequired();
             entity.Property(v => v.FuelType).IsRequired();
+            entity.Property(v => v.LicensePlate).IsRequired();
             entity.Property(v => v.Status).IsRequired();
+            entity.Property(v => v.Description);
+            entity.Property(v => v.CreatedAt);
+            entity.Property(v => v.UpdatedAt);
 
             // Owned types para Money
             entity.OwnsOne(v => v.DailyPrice, dp =>
@@ -92,12 +97,23 @@ public class AppDbContext : DbContext
             });
 
             // Owned type para Location
-            entity.OwnsOne(v => v.Location);
+            entity.OwnsOne(v => v.Location, loc =>
+            {
+                loc.Property(l => l.District).HasColumnName("LocationDistrict");
+                loc.Property(l => l.Address).HasColumnName("LocationAddress");
+                loc.Property(l => l.Lat).HasColumnName("LocationLat");
+                loc.Property(l => l.Lng).HasColumnName("LocationLng");
+            });
 
             // Listas como JSON
             entity.Property(v => v.FeaturesJson).HasColumnType("json");
             entity.Property(v => v.RestrictionsJson).HasColumnType("json");
-            entity.Property(v => v.PhotosJson).HasColumnType("json");
+            entity.Property(v => v.ImagesJson).HasColumnType("json");
+            
+            // Ignorar propiedades de navegación
+            entity.Ignore(v => v.Features);
+            entity.Ignore(v => v.Restrictions);
+            entity.Ignore(v => v.Images);
         });
 
         // -------------------- RENTAL --------------------
