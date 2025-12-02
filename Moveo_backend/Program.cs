@@ -223,6 +223,8 @@ builder.Services.AddScoped<IUserReviewQueryService, UserReviewQueryService>();
 
 var app = builder.Build();
 
+app.UseDeveloperExceptionPage();
+
 // ------------------------- Ensure Database Created -------------------------
 using (var scope = app.Services.CreateScope())
 {
