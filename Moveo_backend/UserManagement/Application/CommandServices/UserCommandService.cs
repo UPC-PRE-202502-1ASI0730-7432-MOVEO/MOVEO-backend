@@ -21,30 +21,8 @@ public class UserCommandService : IUserCommandService
         if (await _userRepository.ExistsByEmailAsync(command.Email))
             throw new InvalidOperationException($"A user with email '{command.Email}' already exists.");
 
-        // Crear objeto de valor para preferencias
-        var preferences = new UserPreferences(
-            command.Preferences.Language,
-            command.Preferences.EmailNotifications,
-            command.Preferences.PushNotifications,
-            command.Preferences.SmsNotifications,
-            command.Preferences.AutoAcceptRentals,
-            command.Preferences.MinimumRentalDays,
-            command.Preferences.InstantBooking
-        );
-
-        // Crear la entidad User
-        var user = new User(
-            command.FirstName,
-            command.LastName,
-            command.Email,
-            command.Password,
-            command.Role,
-            command.Phone,
-            command.Dni,
-            command.LicenseNumber,
-            command.Address,
-            preferences
-        );
+        // Crear la entidad User directamente desde el command
+        var user = new User(command);
 
         await _userRepository.AddAsync(user);
         await _userRepository.SaveChangesAsync();
@@ -57,21 +35,24 @@ public class UserCommandService : IUserCommandService
         var existingUser = await _userRepository.FindByIdAsync(command.Id)
                            ?? throw new KeyNotFoundException($"User with ID {command.Id} not found.");
 
-        var updatedPreferences = new UserPreferences(
-            command.Preferences.Language,
-            command.Preferences.EmailNotifications,
-            command.Preferences.PushNotifications,
-            command.Preferences.SmsNotifications,
-            command.Preferences.AutoAcceptRentals,
-            command.Preferences.MinimumRentalDays,
-            command.Preferences.InstantBooking
-        );
+        // Solo actualizar campos que se proporcionan (PATCH)
+        var updatedPreferences = command.Preferences != null 
+            ? new UserPreferences(
+                command.Preferences.Language,
+                command.Preferences.EmailNotifications,
+                command.Preferences.PushNotifications,
+                command.Preferences.SmsNotifications,
+                command.Preferences.AutoAcceptRentals,
+                command.Preferences.MinimumRentalDays,
+                command.Preferences.InstantBooking
+            )
+            : existingUser.Preferences;
 
         existingUser.Update(
-            command.FirstName,
-            command.LastName,
-            command.Phone,
-            command.Address,
+            command.FirstName ?? existingUser.Name.FirstName,
+            command.LastName ?? existingUser.Name.LastName,
+            command.Phone ?? existingUser.Phone,
+            existingUser.Address,
             updatedPreferences
         );
 

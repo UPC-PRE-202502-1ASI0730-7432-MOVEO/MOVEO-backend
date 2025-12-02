@@ -17,13 +17,22 @@ public static class VehicleResourceFromEntityAssembler
             vehicle.Transmission,
             vehicle.FuelType,
             vehicle.Seats,
+            vehicle.LicensePlate,
+            new VehicleLocationResource(
+                vehicle.Location.District,
+                vehicle.Location.Address,
+                vehicle.Location.Lat,
+                vehicle.Location.Lng
+            ),
             vehicle.DailyPrice.Amount,
-            vehicle.DepositAmount.Amount,
-            vehicle.Location.Address,
-            vehicle.Features.ToArray(),
-            vehicle.Restrictions.ToArray(),
-            vehicle.Photos.ToArray(),
-            vehicle.Status
+            vehicle.DepositAmount?.Amount,
+            vehicle.Status,
+            vehicle.Description,
+            vehicle.Images,
+            vehicle.Features,
+            vehicle.Restrictions,
+            vehicle.CreatedAt,
+            vehicle.UpdatedAt
         );
     }
 }

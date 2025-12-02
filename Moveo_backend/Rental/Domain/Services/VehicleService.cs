@@ -1,31 +1,36 @@
 using Moveo_backend.Rental.Domain.Model.Aggregates;
 using Moveo_backend.Rental.Domain.Model.Commands;
-using Moveo_backend.Rental.Domain.Services;
+using Moveo_backend.Rental.Domain.Repositories;
 
 namespace Moveo_backend.Rental.Domain.Services;
 
 public class VehicleService : IVehicleService
 {
-    private readonly List<Vehicle> _vehicles = new();
+    private readonly IVehicleRepository _vehicleRepository;
 
-    public Task<IEnumerable<Vehicle>> GetAllAsync() => Task.FromResult(_vehicles.AsEnumerable());
-
-    public Task<IEnumerable<Vehicle>> GetAvailableVehiclesAsync()
+    public VehicleService(IVehicleRepository vehicleRepository)
     {
-        var available = _vehicles.Where(v => v.IsAvailable);
-        return Task.FromResult(available);
+        _vehicleRepository = vehicleRepository;
     }
 
-    public Task<Vehicle?> GetByIdAsync(Guid id) =>
-        Task.FromResult(_vehicles.FirstOrDefault(v => v.Id == id));
+    public Task<IEnumerable<Vehicle>> GetAllAsync() => _vehicleRepository.GetAllAsync();
 
-    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(Guid ownerId)
+    public Task<IEnumerable<Vehicle>> GetFilteredAsync(
+        int? ownerId = null,
+        string? status = null,
+        decimal? minPrice = null,
+        decimal? maxPrice = null,
+        string? district = null)
     {
-        var vehicles = _vehicles.Where(v => v.OwnerId == ownerId);
-        return Task.FromResult(vehicles);
+        return _vehicleRepository.GetFilteredAsync(ownerId, status, minPrice, maxPrice, district);
     }
 
-    public Task<Vehicle> CreateVehicleAsync(CreateVehicleCommand command)
+    public Task<Vehicle?> GetByIdAsync(int id) => _vehicleRepository.GetByIdAsync(id);
+
+    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId) => 
+        _vehicleRepository.GetByOwnerIdAsync(ownerId);
+
+    public async Task<Vehicle> CreateVehicleAsync(CreateVehicleCommand command)
     {
         var vehicle = new Vehicle(
             command.OwnerId,
@@ -36,24 +41,27 @@ public class VehicleService : IVehicleService
             command.Transmission,
             command.FuelType,
             command.Seats,
+            command.LicensePlate,
             command.DailyPrice,
             command.DepositAmount,
             command.Location,
-            command.Features.ToList(),
-            command.Restrictions.ToList(),
-            command.Photos.ToList()
+            command.Description,
+            command.Features,
+            command.Restrictions,
+            command.Images
         );
 
-        _vehicles.Add(vehicle);
-        return Task.FromResult(vehicle);
+        await _vehicleRepository.AddAsync(vehicle);
+        return vehicle;
     }
 
-    public Task<Vehicle?> UpdateVehicleAsync(UpdateVehicleCommand command)
+    public async Task<Vehicle?> UpdateVehicleAsync(UpdateVehicleCommand command)
     {
-        var vehicle = _vehicles.FirstOrDefault(v => v.Id == command.Id);
-        if (vehicle == null) return Task.FromResult<Vehicle?>(null);
+        var vehicle = await _vehicleRepository.GetByIdAsync(command.Id);
+        if (vehicle == null) return null;
 
         vehicle.UpdateDetails(
+            command.OwnerId,
             command.Brand,
             command.Model,
             command.Year,
@@ -61,23 +69,38 @@ public class VehicleService : IVehicleService
             command.Transmission,
             command.FuelType,
             command.Seats,
+            command.LicensePlate,
             command.DailyPrice,
             command.DepositAmount,
             command.Location,
-            command.Features.ToList(),
-            command.Restrictions.ToList(),
-            command.Photos.ToList()
+            command.Status,
+            command.Description,
+            command.Features,
+            command.Restrictions,
+            command.Images
         );
 
-        return Task.FromResult(vehicle);
+        await _vehicleRepository.UpdateAsync(vehicle);
+        return vehicle;
     }
 
-    public Task<bool> DeleteVehicleAsync(Guid id)
+    public async Task<Vehicle?> PatchVehicleAsync(PatchVehicleCommand command)
     {
-        var vehicle = _vehicles.FirstOrDefault(v => v.Id == id);
-        if (vehicle == null) return Task.FromResult(false);
+        var vehicle = await _vehicleRepository.GetByIdAsync(command.Id);
+        if (vehicle == null) return null;
 
-        _vehicles.Remove(vehicle);
-        return Task.FromResult(true);
+        vehicle.PartialUpdate(
+            command.DailyPrice?.Amount,
+            command.Status,
+            command.Description,
+            command.Features,
+            command.Restrictions,
+            command.Images
+        );
+
+        await _vehicleRepository.UpdateAsync(vehicle);
+        return vehicle;
     }
+
+    public Task<bool> DeleteVehicleAsync(int id) => _vehicleRepository.DeleteAsync(id);
 }

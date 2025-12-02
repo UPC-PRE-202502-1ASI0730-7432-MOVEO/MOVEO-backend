@@ -8,8 +8,7 @@ public static class ModelBuilderExtensions
 {
     public static void ApplyRentalConfiguration(this ModelBuilder builder)
     {
-        // Aplica las configuraciones de los agregados principales del módulo Rental
-        builder.ApplyConfiguration(new RentalEntityTypeConfiguration());
+        // Entity configurations are applied in AppDbContext.OnModelCreating
         builder.ApplyConfiguration(new VehicleEntityTypeConfiguration());
     }
 

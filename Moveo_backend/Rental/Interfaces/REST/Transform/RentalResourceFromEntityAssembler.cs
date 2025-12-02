@@ -1,4 +1,3 @@
-using Moveo_backend.Rental.Domain.Model.Aggregates;
 using Moveo_backend.Rental.Interfaces.REST.Resources;
 
 namespace Moveo_backend.Rental.Interfaces.REST.Transform;
@@ -12,13 +11,19 @@ public static class RentalResourceFromEntityAssembler
             rental.VehicleId,
             rental.RenterId,
             rental.OwnerId,
+            rental.StartDate,
+            rental.EndDate,
+            rental.TotalPrice,
             rental.Status,
-            rental.RentalPeriod.StartDate,
-            rental.RentalPeriod.EndDate,
-            rental.TotalPrice.Amount,
-            rental.PickupLocation.Address,
-            rental.ReturnLocation.Address,
-            rental.Notes
+            rental.PickupLocation,
+            rental.ReturnLocation,
+            rental.Notes,
+            rental.AdventureRouteId,
+            rental.VehicleRated,
+            rental.VehicleRating,
+            rental.CreatedAt,
+            rental.AcceptedAt,
+            rental.CompletedAt
         );
     }
 }

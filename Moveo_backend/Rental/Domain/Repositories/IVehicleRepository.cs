@@ -4,18 +4,17 @@ namespace Moveo_backend.Rental.Domain.Repositories;
 
 public interface IVehicleRepository
 {
-    Task<Vehicle?> GetByIdAsync(Guid id);
-    Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(Guid ownerId);
+    Task<Vehicle?> GetByIdAsync(int id);
+    Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId);
     Task<IEnumerable<Vehicle>> GetAllAsync();
-    Task<IEnumerable<Vehicle>> GetAvailableAsync(
-        string? location = null,
-        string? brand = null,
-        string? fuelType = null,
+    Task<IEnumerable<Vehicle>> GetFilteredAsync(
+        int? ownerId = null,
+        string? status = null,
         decimal? minPrice = null,
-        decimal? maxPrice = null);
+        decimal? maxPrice = null,
+        string? district = null);
 
     Task AddAsync(Vehicle vehicle);
     Task UpdateAsync(Vehicle vehicle);
-    Task DeleteAsync(Guid id);
-    
+    Task<bool> DeleteAsync(int id);
 }

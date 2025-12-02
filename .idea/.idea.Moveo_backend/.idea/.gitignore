@@ -11,3 +11,25 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+# General IDE / cache / workspace
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+
+# Build artifacts
+bin/
+obj/
+
+# ReSharper / Rider
+_ReSharper.Caches/
+_ReSharper*/
+
+# Node
+node_modules/
+
+
+# Ignored folders
+LearningCenterBackEnd-main/

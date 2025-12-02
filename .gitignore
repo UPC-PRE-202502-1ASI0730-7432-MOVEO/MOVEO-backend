@@ -1,5 +1,43 @@
+# Build artifacts
 bin/
 obj/
+
+# NuGet packages
 /packages/
-riderMoudle.iml
-/_ReSharper.Chaches/
+*.nupkg
+
+# Rider / IntelliJ
+.idea/
+*.iml
+riderModule.iml
+
+# ReSharper caches
+_ReSharper.Caches/
+_ReSharper*/
+
+# Visual Studio / VSCode
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Logs, OS and misc
+*.log
+*.DS_Store
+Thumbs.db
+
+# Caches
+*.cache
+.cache/
+*/cache/
+
+# Node
+node_modules/
+npm-debug.log
+
+# Publish / deployment
+publish/
+
+# Database files
+*.db
+*.sqlite

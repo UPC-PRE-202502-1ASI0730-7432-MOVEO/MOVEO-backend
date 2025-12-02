@@ -7,5 +7,6 @@ public interface IVehicleCommandService
 {
     Task<Vehicle> CreateVehicleAsync(CreateVehicleCommand command);
     Task<Vehicle?> UpdateVehicleAsync(UpdateVehicleCommand command);
-    Task<bool> DeleteVehicleAsync(Guid id);
+    Task<Vehicle?> PatchVehicleAsync(PatchVehicleCommand command);
+    Task<bool> DeleteVehicleAsync(int id);
 }

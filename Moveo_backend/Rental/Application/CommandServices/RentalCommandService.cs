@@ -14,14 +14,14 @@ public class RentalCommandService
     }
 
     public Task<Domain.Model.Aggregates.Rental> Handle(CreateRentalCommand command)
-        => _rentalService.CreateRentalAsync(command);
+        => _rentalService.CreateAsync(command);
 
     public Task<Domain.Model.Aggregates.Rental?> Handle(UpdateRentalCommand command)
-        => _rentalService.UpdateRentalAsync(command);
+        => _rentalService.UpdateAsync(command);
 
-    public Task<bool> Handle(CancelRentalCommand command)
-        => _rentalService.CancelRentalAsync(command);
+    public Task<Domain.Model.Aggregates.Rental?> Handle(PatchRentalCommand command)
+        => _rentalService.PatchAsync(command);
 
-    public Task<bool> Handle(FinishRentalCommand command)
-        => _rentalService.FinishRentalAsync(command);
+    public Task<bool> Handle(DeleteRentalCommand command)
+        => _rentalService.DeleteAsync(command.Id);
 }

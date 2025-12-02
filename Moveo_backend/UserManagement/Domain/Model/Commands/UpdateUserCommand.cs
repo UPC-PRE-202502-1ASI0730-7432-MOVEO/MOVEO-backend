@@ -1,17 +1,15 @@
+using Moveo_backend.UserManagement.Interfaces.REST.Transform;
+
 namespace Moveo_backend.UserManagement.Domain.Model.Commands;
 
 public record UpdateUserCommand(
     int Id,
-    string FirstName,
-    string LastName,
-    string Email,
-    string Password,
-    string Role,
-    string Phone,
-    string Dni,
-    string LicenseNumber,
-    string Address,
-    UserPreferencesDto Preferences
+    string? FirstName,
+    string? LastName,
+    string? Phone,
+    string? Avatar,
+    BankAccountDto? BankAccount,
+    UserPreferencesDto? Preferences
 );
 
 public record UserPreferencesDto(

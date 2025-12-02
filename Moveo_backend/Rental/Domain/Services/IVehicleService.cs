@@ -5,12 +5,20 @@ namespace Moveo_backend.Rental.Domain.Services;
 
 public interface IVehicleService
 {
-    Task<Vehicle?> GetByIdAsync(Guid id);
+    // Queries
+    Task<Vehicle?> GetByIdAsync(int id);
     Task<IEnumerable<Vehicle>> GetAllAsync();
-    Task<IEnumerable<Vehicle>> GetAvailableVehiclesAsync();
-    Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(Guid ownerId);
+    Task<IEnumerable<Vehicle>> GetFilteredAsync(
+        int? ownerId = null,
+        string? status = null,
+        decimal? minPrice = null,
+        decimal? maxPrice = null,
+        string? district = null);
+    Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId);
 
+    // Commands
     Task<Vehicle> CreateVehicleAsync(CreateVehicleCommand command);
     Task<Vehicle?> UpdateVehicleAsync(UpdateVehicleCommand command);
-    Task<bool> DeleteVehicleAsync(Guid id);
+    Task<Vehicle?> PatchVehicleAsync(PatchVehicleCommand command);
+    Task<bool> DeleteVehicleAsync(int id);
 }

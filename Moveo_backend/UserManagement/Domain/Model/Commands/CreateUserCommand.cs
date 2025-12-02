@@ -1,5 +1,3 @@
-using Moveo_backend.UserManagement.Domain.Model.ValueObjects;
-
 namespace Moveo_backend.UserManagement.Domain.Model.Commands;
 
 public record CreateUserCommand(
@@ -11,5 +9,22 @@ public record CreateUserCommand(
     string Dni,
     string LicenseNumber,
     string Role,
-    string Address,
-    UserPreferences Preferences);
+    string? Avatar = null,
+    bool VerifiedEmail = false,
+    bool VerifiedPhone = false,
+    bool VerifiedDni = false,
+    bool VerifiedLicense = false,
+    int TotalRentals = 0,
+    decimal TotalSpent = 0,
+    decimal TotalEarned = 0,
+    int ActiveRentals = 0,
+    int CompletedRentals = 0,
+    int CanceledRentals = 0,
+    string Language = "es",
+    bool NotificationsEmail = true,
+    bool NotificationsPush = true,
+    bool NotificationsSms = false,
+    string? BankName = null,
+    string? AccountType = null,
+    string? AccountNumber = null,
+    bool BankAccountVerified = false);

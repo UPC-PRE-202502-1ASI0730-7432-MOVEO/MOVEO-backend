@@ -1,17 +1,57 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Moveo_backend.Rental.Domain.Model.Commands;
 using Moveo_backend.Shared.Infrastructure.Persistence.EFC.Configuration;
+using Moveo_backend.Shared.Domain.Repositories;
+using Moveo_backend.Shared.Infrastructure.Persistence.EFC.Repositories;
+// UserManagement
+using Moveo_backend.UserManagement.Domain.Repositories;
 using Moveo_backend.UserManagement.Domain.Services;
-using Moveo_backend.Rental.Domain.Services;
+using Moveo_backend.UserManagement.Application.CommandServices;
+using Moveo_backend.UserManagement.Application.QueryServices;
+using Moveo_backend.UserManagement.Infrastructure.Persistence.EFC.Repositories;
+// Rental
 using Moveo_backend.Rental.Domain.Repositories;
+using Moveo_backend.Rental.Domain.Services;
 using Moveo_backend.Rental.Infrastructure.Persistence.EFC.Repository;
-using Moveo_backend.UserManagement.Domain.Model.Commands;
+using Moveo_backend.Rental.Infrastructure.Persistence.EFC.Repositories;
+using Moveo_backend.Rental.Application.CommandServices;
+using Moveo_backend.Rental.Application.QueryServices;
+// Adventure
+using Moveo_backend.Adventure.Domain.Repositories;
+using Moveo_backend.Adventure.Domain.Services;
+using Moveo_backend.Adventure.Application.Internal.CommandServices;
+using Moveo_backend.Adventure.Application.Internal.QueryServices;
+using Moveo_backend.Adventure.Infrastructure.Persistence.EFC.Repositories;
+// Payment
+using Moveo_backend.Payment.Domain.Repositories;
+using Moveo_backend.Payment.Domain.Services;
+using Moveo_backend.Payment.Application.Internal.CommandServices;
+using Moveo_backend.Payment.Application.Internal.QueryServices;
+using Moveo_backend.Payment.Infrastructure.Persistence.EFC.Repositories;
+// Notification
+using Moveo_backend.Notification.Domain.Repositories;
+using Moveo_backend.Notification.Domain.Services;
+using Moveo_backend.Notification.Application.Internal.CommandServices;
+using Moveo_backend.Notification.Application.Internal.QueryServices;
+using Moveo_backend.Notification.Infrastructure.Persistence.EFC.Repositories;
+// Support
+using Moveo_backend.Support.Domain.Repositories;
+using Moveo_backend.Support.Domain.Services;
+using Moveo_backend.Support.Application.Internal.CommandServices;
+using Moveo_backend.Support.Application.Internal.QueryServices;
+using Moveo_backend.Support.Infrastructure.Persistence.EFC.Repositories;
+// UserReview
+using Moveo_backend.UserReview.Domain.Repositories;
+using Moveo_backend.UserReview.Domain.Services;
+using Moveo_backend.UserReview.Application.Internal.CommandServices;
+using Moveo_backend.UserReview.Application.Internal.QueryServices;
+using Moveo_backend.UserReview.Infrastructure.Persistence.EFC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ------------------------- Services & Swagger -------------------------
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -19,7 +59,6 @@ builder.Services.AddSwaggerGen();
 var corsPolicyName = "AllowMoveoFrontend";
 if (builder.Environment.IsDevelopment())
 {
-    // Development: allow any origin to simplify frontend testing
     builder.Services.AddCors(options =>
     {
         options.AddPolicy(corsPolicyName, policy =>
@@ -32,7 +71,6 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    // Production: allow only specific origins (add your frontend URL(s) here)
     builder.Services.AddCors(options =>
     {
         options.AddPolicy(corsPolicyName, policy =>
@@ -52,19 +90,57 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     if (string.IsNullOrEmpty(connectionString))
-        throw new Exception("Database connection string is not set.");
+        throw new InvalidOperationException("Database connection string is not set.");
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
            .LogTo(Console.WriteLine, LogLevel.Information)
            .EnableSensitiveDataLogging()
            .EnableDetailedErrors();
 });
 
-// ------------------------- Dependency Injection -------------------------
-builder.Services.AddSingleton<IUserService, UserService>();
+// ------------------------- Shared Dependencies -------------------------
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// ------------------------- UserManagement Dependencies -------------------------
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserCommandService, UserCommandService>();
+builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+
+// ------------------------- Rental Dependencies -------------------------
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IRentalRepository, RentalRepository>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IRentalService, RentalService>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IReviewCommandService, ReviewCommandService>();
+builder.Services.AddScoped<IReviewQueryService, ReviewQueryService>();
+
+// ------------------------- Adventure Dependencies -------------------------
+builder.Services.AddScoped<IAdventureRouteRepository, AdventureRouteRepository>();
+builder.Services.AddScoped<IAdventureRouteCommandService, AdventureRouteCommandService>();
+builder.Services.AddScoped<IAdventureRouteQueryService, AdventureRouteQueryService>();
+
+// ------------------------- Payment Dependencies -------------------------
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentCommandService, PaymentCommandService>();
+builder.Services.AddScoped<IPaymentQueryService, PaymentQueryService>();
+
+// ------------------------- Notification Dependencies -------------------------
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationCommandService, NotificationCommandService>();
+builder.Services.AddScoped<INotificationQueryService, NotificationQueryService>();
+
+// ------------------------- Support Dependencies -------------------------
+builder.Services.AddScoped<ISupportTicketRepository, SupportTicketRepository>();
+builder.Services.AddScoped<ITicketMessageRepository, TicketMessageRepository>();
+builder.Services.AddScoped<ISupportTicketCommandService, SupportTicketCommandService>();
+builder.Services.AddScoped<ISupportTicketQueryService, SupportTicketQueryService>();
+builder.Services.AddScoped<ITicketMessageCommandService, TicketMessageCommandService>();
+builder.Services.AddScoped<ITicketMessageQueryService, TicketMessageQueryService>();
+
+// ------------------------- UserReview Dependencies -------------------------
+builder.Services.AddScoped<IUserReviewRepository, UserReviewRepository>();
+builder.Services.AddScoped<IUserReviewCommandService, UserReviewCommandService>();
+builder.Services.AddScoped<IUserReviewQueryService, UserReviewQueryService>();
 
 var app = builder.Build();
 
@@ -74,7 +150,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     try
     {
-        db.Database.EnsureCreated();
+        await db.Database.EnsureCreatedAsync();
         Console.WriteLine("✅ Base de datos y tablas creadas correctamente (si no existían).");
     }
     catch (Exception ex)
@@ -83,7 +159,7 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine(ex.Message);
         if (ex.InnerException != null)
             Console.WriteLine($"InnerException: {ex.InnerException.Message}");
-        throw; // re-lanza para que la app no siga corriendo con fallo crítico
+        throw;
     }
 }
 
@@ -92,134 +168,8 @@ app.UseCors(corsPolicyName);
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
-
-// ------------------------- USERS Endpoints -------------------------
-app.MapGet("/api/v1/users", async ([FromServices] IUserService userService) =>
-{
-    var users = await userService.GetAllUsersAsync();
-    return Results.Ok(users);
-})
-.WithName("GetUsers")
-.WithTags("Users");
-
-app.MapPost("/api/v1/users", async ([FromBody] CreateUserCommand command, [FromServices] IUserService userService) =>
-{
-    var createdUser = await userService.CreateUserAsync(command);
-    return Results.Created($"/api/v1/users/{createdUser.Id}", createdUser);
-})
-.WithName("CreateUser")
-.WithTags("Users");
-
-app.MapPut("/api/v1/users/{id:int}", async (int id, [FromBody] UpdateUserCommand command, [FromServices] IUserService userService) =>
-{
-    var updatedUser = await userService.UpdateUserAsync(id, command);
-    return updatedUser != null ? Results.Ok(updatedUser) : Results.NotFound();
-})
-.WithName("UpdateUser")
-.WithTags("Users");
-
-app.MapPut("/api/v1/users/{id:int}/password", async (int id, [FromBody] ChangePasswordCommand command, [FromServices] IUserService userService) =>
-{
-    var success = await userService.ChangePasswordAsync(id, command);
-    return success ? Results.NoContent() : Results.NotFound();
-})
-.WithName("ChangeUserPassword")
-.WithTags("Users");
-
-app.MapPut("/api/v1/users/{id:int}/role", async (int id, [FromBody] ChangeUserRoleCommand command, [FromServices] IUserService userService) =>
-{
-    var success = await userService.ChangeUserRoleAsync(id, command);
-    return success ? Results.NoContent() : Results.NotFound();
-})
-.WithName("ChangeUserRole")
-.WithTags("Users");
-
-app.MapDelete("/api/v1/users/{id:int}", async (int id, [FromServices] IUserService userService) =>
-{
-    var deleted = await userService.DeleteUserAsync(id);
-    return deleted ? Results.NoContent() : Results.NotFound();
-})
-.WithName("DeleteUser")
-.WithTags("Users");
-
-// ------------------------- VEHICLES Endpoints -------------------------
-app.MapGet("/api/v1/vehicles", async ([FromServices] IVehicleService vehicleService) =>
-{
-    var vehicles = await vehicleService.GetAllAsync();
-    return Results.Ok(vehicles);
-})
-.WithName("GetVehicles")
-.WithTags("Vehicles");
-
-app.MapPost("/api/v1/vehicles", async ([FromBody] CreateVehicleCommand command, [FromServices] IVehicleService vehicleService) =>
-{
-    var vehicle = await vehicleService.CreateVehicleAsync(command);
-    return Results.Created($"/api/v1/vehicles/{vehicle.Id}", vehicle);
-})
-.WithName("CreateVehicle")
-.WithTags("Vehicles");
-
-app.MapPut("/api/v1/vehicles/{id:guid}", async (Guid id, [FromBody] UpdateVehicleCommand command, [FromServices] IVehicleService vehicleService) =>
-{
-    var updatedCommand = command with { Id = id };
-    var updated = await vehicleService.UpdateVehicleAsync(updatedCommand);
-    return updated != null ? Results.Ok(updated) : Results.NotFound();
-})
-.WithName("UpdateVehicle")
-.WithTags("Vehicles");
-
-app.MapDelete("/api/v1/vehicles/{id:guid}", async (Guid id, [FromServices] IVehicleService vehicleService) =>
-{
-    var deleted = await vehicleService.DeleteVehicleAsync(id);
-    return deleted ? Results.NoContent() : Results.NotFound();
-})
-.WithName("DeleteVehicle")
-.WithTags("Vehicles");
-
-// ------------------------- RENTALS Endpoints -------------------------
-app.MapGet("/api/v1/rentals", async ([FromServices] IRentalService rentalService) =>
-{
-    var rentals = await rentalService.GetAllAsync();
-    return Results.Ok(rentals);
-})
-.WithName("GetRentals")
-.WithTags("Rentals");
-
-app.MapPost("/api/v1/rentals", async ([FromBody] CreateRentalCommand command, [FromServices] IRentalService rentalService) =>
-{
-    var rental = await rentalService.CreateRentalAsync(command);
-    return Results.Created($"/api/v1/rentals/{rental.Id}", rental);
-})
-.WithName("CreateRental")
-.WithTags("Rentals");
-
-app.MapPut("/api/v1/rentals/{id:guid}", async (Guid id, [FromBody] UpdateRentalCommand command, [FromServices] IRentalService rentalService) =>
-{
-    var updatedCommand = command with { Id = id };
-    var updated = await rentalService.UpdateRentalAsync(updatedCommand);
-    return updated != null ? Results.Ok(updated) : Results.NotFound();
-})
-.WithName("UpdateRental")
-.WithTags("Rentals");
-
-app.MapPut("/api/v1/rentals/{id:guid}/cancel", async (Guid id, [FromBody] CancelRentalCommand command, [FromServices] IRentalService rentalService) =>
-{
-    var updatedCommand = command with { Id = id };
-    var success = await rentalService.CancelRentalAsync(updatedCommand);
-    return success ? Results.NoContent() : Results.NotFound();
-})
-.WithName("CancelRental")
-.WithTags("Rentals");
-
-app.MapPut("/api/v1/rentals/{id:guid}/finish", async (Guid id, [FromBody] FinishRentalCommand command, [FromServices] IRentalService rentalService) =>
-{
-    var updatedCommand = command with { Id = id };
-    var success = await rentalService.FinishRentalAsync(updatedCommand);
-    return success ? Results.NoContent() : Results.NotFound();
-})
-.WithName("FinishRental")
-.WithTags("Rentals");
+app.MapControllers();
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Urls.Add($"http://*:{port}");
-app.Run();
+await app.RunAsync();
