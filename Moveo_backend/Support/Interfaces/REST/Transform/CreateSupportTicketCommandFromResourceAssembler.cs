@@ -12,7 +12,18 @@ public static class CreateSupportTicketCommandFromResourceAssembler
             resource.Subject,
             resource.Description,
             resource.GetCategory(),
-            resource.GetPriority()
+            resource.GetPriority(),
+            resource.GetType(),
+            resource.RelatedId,
+            resource.RelatedType,
+            // Damage ticket fields
+            resource.EstimatedCost,
+            resource.VehicleId,
+            resource.VehicleName,
+            resource.RentalId,
+            resource.RenterId,
+            resource.RenterName,
+            resource.GetAttachmentsJson()
         );
     }
 }

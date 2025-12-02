@@ -29,6 +29,17 @@ public class SupportTicketCommandService(
         return ticket;
     }
 
+    public async Task<SupportTicket?> Handle(CloseSupportTicketCommand command)
+    {
+        var ticket = await supportTicketRepository.FindByIdAsync(command.Id);
+        if (ticket is null) return null;
+
+        ticket.Close();
+        supportTicketRepository.Update(ticket);
+        await unitOfWork.CompleteAsync();
+        return ticket;
+    }
+
     public async Task<bool> Handle(DeleteSupportTicketCommand command)
     {
         var ticket = await supportTicketRepository.FindByIdAsync(command.Id);

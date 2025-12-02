@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bHeYIEKAeU8=",
+  "dgSpecHash": "zJwsV9c22jg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
+  "projectFilePath": "c:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\goku6\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\goku6\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",

@@ -16,10 +16,29 @@ public class SupportTicketsController(
     ITicketMessageQueryService ticketMessageQueryService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAllSupportTickets()
+    public async Task<IActionResult> GetAllSupportTickets(
+        [FromQuery] int? userId = null,
+        [FromQuery] string? status = null,
+        [FromQuery] string? type = null)
     {
-        var query = new GetAllSupportTicketsQuery();
-        var tickets = await supportTicketQueryService.Handle(query);
+        IEnumerable<Domain.Model.Aggregate.SupportTicket> tickets;
+        
+        if (userId.HasValue)
+        {
+            var query = new GetSupportTicketsByUserIdQuery(userId.Value);
+            tickets = await supportTicketQueryService.Handle(query);
+        }
+        else if (!string.IsNullOrEmpty(status))
+        {
+            var query = new GetSupportTicketsByStatusQuery(status);
+            tickets = await supportTicketQueryService.Handle(query);
+        }
+        else
+        {
+            var query = new GetAllSupportTicketsQuery();
+            tickets = await supportTicketQueryService.Handle(query);
+        }
+        
         var resources = tickets.Select(t => SupportTicketResourceFromEntityAssembler.ToResourceFromEntity(t));
         return Ok(resources);
     }
@@ -66,6 +85,26 @@ public class SupportTicketsController(
     public async Task<IActionResult> UpdateSupportTicket(int id, [FromBody] UpdateSupportTicketResource resource)
     {
         var command = UpdateSupportTicketCommandFromResourceAssembler.ToCommandFromResource(id, resource);
+        var ticket = await supportTicketCommandService.Handle(command);
+        if (ticket is null) return NotFound();
+        var ticketResource = SupportTicketResourceFromEntityAssembler.ToResourceFromEntity(ticket);
+        return Ok(ticketResource);
+    }
+
+    [HttpPatch("{id:int}")]
+    public async Task<IActionResult> PatchSupportTicket(int id, [FromBody] UpdateSupportTicketResource resource)
+    {
+        var command = UpdateSupportTicketCommandFromResourceAssembler.ToCommandFromResource(id, resource);
+        var ticket = await supportTicketCommandService.Handle(command);
+        if (ticket is null) return NotFound();
+        var ticketResource = SupportTicketResourceFromEntityAssembler.ToResourceFromEntity(ticket);
+        return Ok(ticketResource);
+    }
+
+    [HttpPatch("{id:int}/close")]
+    public async Task<IActionResult> CloseSupportTicket(int id)
+    {
+        var command = new CloseSupportTicketCommand(id);
         var ticket = await supportTicketCommandService.Handle(command);
         if (ticket is null) return NotFound();
         var ticketResource = SupportTicketResourceFromEntityAssembler.ToResourceFromEntity(ticket);

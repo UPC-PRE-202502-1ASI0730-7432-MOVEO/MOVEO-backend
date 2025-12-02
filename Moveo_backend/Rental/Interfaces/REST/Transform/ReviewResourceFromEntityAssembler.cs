@@ -9,6 +9,7 @@ public static class ReviewResourceFromEntityAssembler
         return new Resources.ReviewResource(
             entity.Id,
             entity.RentalId,
+            entity.VehicleId,
             entity.ReviewerId,
             entity.RevieweeId,
             entity.Rating,

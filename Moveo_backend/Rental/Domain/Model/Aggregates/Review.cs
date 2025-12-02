@@ -4,6 +4,7 @@ public class Review
 {
     public int Id { get; private set; }
     public int RentalId { get; private set; }
+    public int? VehicleId { get; private set; }
     public int ReviewerId { get; private set; }
     public int RevieweeId { get; private set; }
     public int Rating { get; private set; }
@@ -16,9 +17,10 @@ public class Review
     
     protected Review() { }
     
-    public Review(int rentalId, int reviewerId, int revieweeId, int rating, string comment, string type)
+    public Review(int rentalId, int? vehicleId, int reviewerId, int revieweeId, int rating, string comment, string type)
     {
         RentalId = rentalId;
+        VehicleId = vehicleId;
         ReviewerId = reviewerId;
         RevieweeId = revieweeId;
         Rating = rating;

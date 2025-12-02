@@ -21,6 +21,7 @@ public class ReviewCommandService : IReviewCommandService
     {
         var review = new Review(
             command.RentalId,
+            command.VehicleId,
             command.ReviewerId,
             command.RevieweeId,
             command.Rating,

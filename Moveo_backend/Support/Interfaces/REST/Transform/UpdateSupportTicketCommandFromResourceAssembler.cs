@@ -11,7 +11,20 @@ public static class UpdateSupportTicketCommandFromResourceAssembler
             id,
             resource.Status,
             resource.Priority,
-            resource.AssignedToId
+            resource.AssignedToId,
+            resource.ResolutionNotes,
+            // Damage cost update
+            resource.EstimatedCost,
+            // Dispute fields
+            resource.DisputeStatus,
+            resource.DisputeReason,
+            resource.DisputeDescription,
+            resource.DisputedBy,
+            // Additional proof fields
+            resource.GetAdditionalProofJson(),
+            resource.AdditionalProofMessage,
+            // Payment fields
+            resource.PaymentStatus
         );
     }
 }

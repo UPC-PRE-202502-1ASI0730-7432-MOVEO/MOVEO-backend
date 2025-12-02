@@ -43,6 +43,7 @@ public class AdventureRoutesController(
     public async Task<IActionResult> GetAllAdventureRoutes(
         [FromQuery] int? ownerId = null,
         [FromQuery] string? type = null,
+        [FromQuery] string? difficulty = null,
         [FromQuery] bool? featured = null)
     {
         IEnumerable<Domain.Model.Aggregate.AdventureRoute> routes;
@@ -54,6 +55,10 @@ public class AdventureRoutesController(
         else if (!string.IsNullOrEmpty(type))
         {
             routes = await adventureRouteQueryService.Handle(new GetAdventureRoutesByTypeQuery(type));
+        }
+        else if (!string.IsNullOrEmpty(difficulty))
+        {
+            routes = await adventureRouteQueryService.Handle(new GetAdventureRoutesByDifficultyQuery(difficulty));
         }
         else if (featured == true)
         {

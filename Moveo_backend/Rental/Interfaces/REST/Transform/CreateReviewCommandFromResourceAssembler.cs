@@ -9,6 +9,7 @@ public static class CreateReviewCommandFromResourceAssembler
     {
         return new CreateReviewCommand(
             resource.RentalId,
+            resource.VehicleId,
             resource.ReviewerId,
             resource.RevieweeId,
             resource.Rating,

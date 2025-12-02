@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Moveo_backend.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -11,9 +12,11 @@ using Moveo_backend.Shared.Infrastructure.Persistence.EFC.Configuration;
 namespace Moveo_backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251202131543_AddUserReviewAndUpdatedEntities")]
+    partial class AddUserReviewAndUpdatedEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -403,20 +406,8 @@ namespace Moveo_backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AdditionalProofJson")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("AdditionalProofMessage")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("AdditionalProofSentAt")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<int?>("AssignedToId")
                         .HasColumnType("int");
-
-                    b.Property<string>("AttachmentsJson")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -429,30 +420,6 @@ namespace Moveo_backend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("DisputeDescription")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("DisputeReason")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("DisputeStatus")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("DisputedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int?>("DisputedBy")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("EstimatedCost")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<DateTime?>("PaidAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("PaymentStatus")
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Priority")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -461,15 +428,6 @@ namespace Moveo_backend.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RelatedType")
-                        .HasColumnType("longtext");
-
-                    b.Property<int?>("RentalId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RenterId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RenterName")
                         .HasColumnType("longtext");
 
                     b.Property<string>("ResolutionNotes")
@@ -495,12 +453,6 @@ namespace Moveo_backend.Migrations
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
-
-                    b.Property<int?>("VehicleId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("VehicleName")
-                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 

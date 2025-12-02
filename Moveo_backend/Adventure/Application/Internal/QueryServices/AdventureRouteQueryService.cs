@@ -32,4 +32,9 @@ public class AdventureRouteQueryService(IAdventureRouteRepository adventureRoute
     {
         return await adventureRouteRepository.FindFeaturedAsync();
     }
+
+    public async Task<IEnumerable<AdventureRoute>> Handle(GetAdventureRoutesByDifficultyQuery query)
+    {
+        return await adventureRouteRepository.FindByDifficultyAsync(query.Difficulty);
+    }
 }

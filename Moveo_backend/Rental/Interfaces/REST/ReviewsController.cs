@@ -23,10 +23,41 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllReviews()
+    public async Task<IActionResult> GetAllReviews(
+        [FromQuery] int? vehicleId = null,
+        [FromQuery] int? rentalId = null,
+        [FromQuery] int? reviewerId = null,
+        [FromQuery] int? revieweeId = null)
     {
-        var query = new GetAllReviewsQuery();
-        var reviews = await _reviewQueryService.Handle(query);
+        IEnumerable<Domain.Model.Aggregates.Review> reviews;
+        
+        if (rentalId.HasValue)
+        {
+            var query = new GetReviewsByRentalIdQuery(rentalId.Value);
+            reviews = await _reviewQueryService.Handle(query);
+        }
+        else if (reviewerId.HasValue)
+        {
+            var query = new GetReviewsByReviewerIdQuery(reviewerId.Value);
+            reviews = await _reviewQueryService.Handle(query);
+        }
+        else if (revieweeId.HasValue)
+        {
+            var query = new GetReviewsByRevieweeIdQuery(revieweeId.Value);
+            reviews = await _reviewQueryService.Handle(query);
+        }
+        else
+        {
+            var query = new GetAllReviewsQuery();
+            reviews = await _reviewQueryService.Handle(query);
+        }
+        
+        // Filter by vehicleId if provided
+        if (vehicleId.HasValue)
+        {
+            reviews = reviews.Where(r => r.VehicleId == vehicleId.Value);
+        }
+        
         var resources = reviews.Select(ReviewResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);
     }

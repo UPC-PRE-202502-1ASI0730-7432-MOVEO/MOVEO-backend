@@ -10,4 +10,5 @@ public interface IAdventureRouteQueryService
     Task<IEnumerable<AdventureRoute>> Handle(GetAdventureRoutesByOwnerIdQuery query);
     Task<IEnumerable<AdventureRoute>> Handle(GetAdventureRoutesByTypeQuery query);
     Task<IEnumerable<AdventureRoute>> Handle(GetFeaturedAdventureRoutesQuery query);
+    Task<IEnumerable<AdventureRoute>> Handle(GetAdventureRoutesByDifficultyQuery query);
 }

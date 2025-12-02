@@ -7,5 +7,6 @@ public interface ISupportTicketCommandService
 {
     Task<SupportTicket?> Handle(CreateSupportTicketCommand command);
     Task<SupportTicket?> Handle(UpdateSupportTicketCommand command);
+    Task<SupportTicket?> Handle(CloseSupportTicketCommand command);
     Task<bool> Handle(DeleteSupportTicketCommand command);
 }

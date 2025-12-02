@@ -30,6 +30,13 @@ public class AdventureRouteRepository(AppDbContext context)
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<AdventureRoute>> FindByDifficultyAsync(string difficulty)
+    {
+        return await Context.Set<AdventureRoute>()
+            .Where(route => route.Difficulty == difficulty)
+            .ToListAsync();
+    }
+
     public async Task<bool> ExistsByNameAsync(string name)
     {
         return await Context.Set<AdventureRoute>()
