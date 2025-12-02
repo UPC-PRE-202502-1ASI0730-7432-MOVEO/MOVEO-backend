@@ -5,5 +5,8 @@ public record CreateSupportTicketCommand(
     string Subject,
     string Description,
     string Category,
-    string? Priority
+    string? Priority,
+    string? Type,
+    int? RelatedId,
+    string? RelatedType
 );

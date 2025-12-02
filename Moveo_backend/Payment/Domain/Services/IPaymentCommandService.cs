@@ -7,5 +7,6 @@ public interface IPaymentCommandService
 {
     Task<PaymentEntity?> Handle(CreatePaymentCommand command);
     Task<PaymentEntity?> Handle(UpdatePaymentCommand command);
+    Task<PaymentEntity?> Handle(PatchPaymentCommand command);
     Task<bool> Handle(DeletePaymentCommand command);
 }

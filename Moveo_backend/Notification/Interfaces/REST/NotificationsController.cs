@@ -14,10 +14,31 @@ public class NotificationsController(
     INotificationQueryService notificationQueryService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAllNotifications()
+    public async Task<IActionResult> GetAllNotifications(
+        [FromQuery] int? userId = null,
+        [FromQuery] bool? read = null)
     {
-        var query = new GetAllNotificationsQuery();
-        var notifications = await notificationQueryService.Handle(query);
+        IEnumerable<Domain.Model.Aggregate.Notification> notifications;
+        
+        if (userId.HasValue)
+        {
+            if (read.HasValue && !read.Value)
+            {
+                var query = new GetUnreadNotificationsByUserIdQuery(userId.Value);
+                notifications = await notificationQueryService.Handle(query);
+            }
+            else
+            {
+                var query = new GetNotificationsByUserIdQuery(userId.Value);
+                notifications = await notificationQueryService.Handle(query);
+            }
+        }
+        else
+        {
+            var query = new GetAllNotificationsQuery();
+            notifications = await notificationQueryService.Handle(query);
+        }
+        
         var resources = notifications.Select(NotificationResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);
     }
@@ -58,6 +79,20 @@ public class NotificationsController(
         if (notification is null) return BadRequest();
         var notificationResource = NotificationResourceFromEntityAssembler.ToResourceFromEntity(notification);
         return CreatedAtAction(nameof(GetNotificationById), new { id = notification.Id }, notificationResource);
+    }
+
+    [HttpPatch("{id:int}")]
+    public async Task<IActionResult> UpdateNotification(int id, [FromBody] UpdateNotificationResource resource)
+    {
+        if (resource.Read == true)
+        {
+            var command = new MarkNotificationAsReadCommand(id);
+            var notification = await notificationCommandService.Handle(command);
+            if (notification is null) return NotFound();
+            var updatedResource = NotificationResourceFromEntityAssembler.ToResourceFromEntity(notification);
+            return Ok(updatedResource);
+        }
+        return BadRequest();
     }
 
     [HttpPut("{id:int}/read")]

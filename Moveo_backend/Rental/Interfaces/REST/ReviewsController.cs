@@ -41,8 +41,8 @@ public class ReviewsController : ControllerBase
         return Ok(resource);
     }
 
-    [HttpGet("rental/{rentalId:guid}")]
-    public async Task<IActionResult> GetReviewsByRentalId(Guid rentalId)
+    [HttpGet("rental/{rentalId:int}")]
+    public async Task<IActionResult> GetReviewsByRentalId(int rentalId)
     {
         var query = new GetReviewsByRentalIdQuery(rentalId);
         var reviews = await _reviewQueryService.Handle(query);
@@ -50,8 +50,8 @@ public class ReviewsController : ControllerBase
         return Ok(resources);
     }
 
-    [HttpGet("reviewer/{reviewerId:guid}")]
-    public async Task<IActionResult> GetReviewsByReviewerId(Guid reviewerId)
+    [HttpGet("reviewer/{reviewerId:int}")]
+    public async Task<IActionResult> GetReviewsByReviewerId(int reviewerId)
     {
         var query = new GetReviewsByReviewerIdQuery(reviewerId);
         var reviews = await _reviewQueryService.Handle(query);
@@ -59,8 +59,8 @@ public class ReviewsController : ControllerBase
         return Ok(resources);
     }
 
-    [HttpGet("reviewee/{revieweeId:guid}")]
-    public async Task<IActionResult> GetReviewsByRevieweeId(Guid revieweeId)
+    [HttpGet("reviewee/{revieweeId:int}")]
+    public async Task<IActionResult> GetReviewsByRevieweeId(int revieweeId)
     {
         var query = new GetReviewsByRevieweeIdQuery(revieweeId);
         var reviews = await _reviewQueryService.Handle(query);

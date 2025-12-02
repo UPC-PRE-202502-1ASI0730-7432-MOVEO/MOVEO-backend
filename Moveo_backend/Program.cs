@@ -41,6 +41,12 @@ using Moveo_backend.Support.Domain.Services;
 using Moveo_backend.Support.Application.Internal.CommandServices;
 using Moveo_backend.Support.Application.Internal.QueryServices;
 using Moveo_backend.Support.Infrastructure.Persistence.EFC.Repositories;
+// UserReview
+using Moveo_backend.UserReview.Domain.Repositories;
+using Moveo_backend.UserReview.Domain.Services;
+using Moveo_backend.UserReview.Application.Internal.CommandServices;
+using Moveo_backend.UserReview.Application.Internal.QueryServices;
+using Moveo_backend.UserReview.Infrastructure.Persistence.EFC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -130,6 +136,11 @@ builder.Services.AddScoped<ISupportTicketCommandService, SupportTicketCommandSer
 builder.Services.AddScoped<ISupportTicketQueryService, SupportTicketQueryService>();
 builder.Services.AddScoped<ITicketMessageCommandService, TicketMessageCommandService>();
 builder.Services.AddScoped<ITicketMessageQueryService, TicketMessageQueryService>();
+
+// ------------------------- UserReview Dependencies -------------------------
+builder.Services.AddScoped<IUserReviewRepository, UserReviewRepository>();
+builder.Services.AddScoped<IUserReviewCommandService, UserReviewCommandService>();
+builder.Services.AddScoped<IUserReviewQueryService, UserReviewQueryService>();
 
 var app = builder.Build();
 

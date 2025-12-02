@@ -12,8 +12,12 @@ public class Notification
     public bool IsRead { get; private set; }
     public int? RelatedEntityId { get; private set; }
     public string? RelatedEntityType { get; private set; } // rental, payment, review, etc.
+    public string? ActionUrl { get; private set; }
+    public string? ActionLabel { get; private set; }
+    public string? MetadataJson { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
+    public DateTime? ReadAt { get; private set; }
 
     protected Notification() { }
 
@@ -26,19 +30,25 @@ public class Notification
         IsRead = false;
         RelatedEntityId = command.RelatedEntityId;
         RelatedEntityType = command.RelatedEntityType;
+        ActionUrl = command.ActionUrl;
+        ActionLabel = command.ActionLabel;
+        MetadataJson = command.MetadataJson;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+        ReadAt = null;
     }
 
     public void MarkAsRead()
     {
         IsRead = true;
+        ReadAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void MarkAsUnread()
     {
         IsRead = false;
+        ReadAt = null;
         UpdatedAt = DateTime.UtcNow;
     }
 }

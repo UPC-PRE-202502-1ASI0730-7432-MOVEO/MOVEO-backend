@@ -10,10 +10,13 @@ public static class CreateNotificationCommandFromResourceAssembler
         return new CreateNotificationCommand(
             resource.UserId,
             resource.Title,
-            resource.Body,
+            resource.GetBody(),
             resource.Type,
-            resource.RelatedEntityId,
-            resource.RelatedEntityType
+            resource.GetRelatedEntityId(),
+            resource.GetRelatedEntityType(),
+            resource.ActionUrl,
+            resource.ActionLabel,
+            resource.GetMetadataJson()
         );
     }
 }

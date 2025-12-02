@@ -6,5 +6,8 @@ public record CreateNotificationCommand(
     string Body,
     string Type,
     int? RelatedEntityId,
-    string? RelatedEntityType
+    string? RelatedEntityType,
+    string? ActionUrl,
+    string? ActionLabel,
+    string? MetadataJson
 );

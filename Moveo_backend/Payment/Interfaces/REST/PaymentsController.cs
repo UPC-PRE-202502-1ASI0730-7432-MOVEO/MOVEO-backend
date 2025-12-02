@@ -13,10 +13,16 @@ public class PaymentsController(
     IPaymentCommandService paymentCommandService,
     IPaymentQueryService paymentQueryService) : ControllerBase
 {
+    // GET /api/v1/payments with optional filters
     [HttpGet]
-    public async Task<IActionResult> GetAllPayments()
+    public async Task<IActionResult> GetAllPayments(
+        [FromQuery] int? payerId,
+        [FromQuery] int? recipientId,
+        [FromQuery] int? rentalId,
+        [FromQuery] string? status,
+        [FromQuery] string? type)
     {
-        var query = new GetAllPaymentsQuery();
+        var query = new GetFilteredPaymentsQuery(payerId, recipientId, rentalId, status, type);
         var payments = await paymentQueryService.Handle(query);
         var resources = payments.Select(PaymentResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);
@@ -73,6 +79,16 @@ public class PaymentsController(
     public async Task<IActionResult> UpdatePayment(int id, [FromBody] UpdatePaymentResource resource)
     {
         var command = UpdatePaymentCommandFromResourceAssembler.ToCommandFromResource(id, resource);
+        var payment = await paymentCommandService.Handle(command);
+        if (payment is null) return NotFound();
+        var paymentResource = PaymentResourceFromEntityAssembler.ToResourceFromEntity(payment);
+        return Ok(paymentResource);
+    }
+
+    [HttpPatch("{id:int}")]
+    public async Task<IActionResult> PatchPayment(int id, [FromBody] PatchPaymentResource resource)
+    {
+        var command = UpdatePaymentCommandFromResourceAssembler.ToPatchCommandFromResource(id, resource);
         var payment = await paymentCommandService.Handle(command);
         if (payment is null) return NotFound();
         var paymentResource = PaymentResourceFromEntityAssembler.ToResourceFromEntity(payment);

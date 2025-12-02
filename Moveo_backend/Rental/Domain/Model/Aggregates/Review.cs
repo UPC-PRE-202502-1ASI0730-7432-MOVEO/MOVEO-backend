@@ -3,12 +3,12 @@ namespace Moveo_backend.Rental.Domain.Model.Aggregates;
 public class Review
 {
     public int Id { get; private set; }
-    public Guid RentalId { get; private set; }
-    public Guid ReviewerId { get; private set; }
-    public Guid RevieweeId { get; private set; }
+    public int RentalId { get; private set; }
+    public int ReviewerId { get; private set; }
+    public int RevieweeId { get; private set; }
     public int Rating { get; private set; }
-    public string Comment { get; private set; }
-    public string Type { get; private set; } // "owner-to-renter", "renter-to-owner", "vehicle"
+    public string Comment { get; private set; } = string.Empty;
+    public string Type { get; private set; } = string.Empty; // "owner-to-renter", "renter-to-owner", "vehicle"
     public DateTime CreatedAt { get; private set; }
     
     // Navigation properties
@@ -16,7 +16,7 @@ public class Review
     
     protected Review() { }
     
-    public Review(Guid rentalId, Guid reviewerId, Guid revieweeId, int rating, string comment, string type)
+    public Review(int rentalId, int reviewerId, int revieweeId, int rating, string comment, string type)
     {
         RentalId = rentalId;
         ReviewerId = reviewerId;

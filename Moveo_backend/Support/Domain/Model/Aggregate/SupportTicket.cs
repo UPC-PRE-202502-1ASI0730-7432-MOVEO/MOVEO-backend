@@ -11,6 +11,10 @@ public class SupportTicket
     public string Category { get; private set; } // technical, billing, general, rental_issue, etc.
     public string Status { get; private set; } // open, in_progress, resolved, closed
     public string Priority { get; private set; } // low, medium, high, urgent
+    public string Type { get; private set; } // general, complaint, request, etc.
+    public int? RelatedId { get; private set; }
+    public string? RelatedType { get; private set; } // rental, vehicle, payment, etc.
+    public string? ResolutionNotes { get; private set; }
     public int? AssignedToId { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
@@ -26,6 +30,7 @@ public class SupportTicket
         Category = string.Empty;
         Status = string.Empty;
         Priority = string.Empty;
+        Type = string.Empty;
     }
 
     public SupportTicket(CreateSupportTicketCommand command)
@@ -36,6 +41,9 @@ public class SupportTicket
         Category = command.Category;
         Status = "open";
         Priority = command.Priority ?? "medium";
+        Type = command.Type ?? "general";
+        RelatedId = command.RelatedId;
+        RelatedType = command.RelatedType;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
@@ -45,12 +53,20 @@ public class SupportTicket
         if (command.Status is not null) Status = command.Status;
         if (command.Priority is not null) Priority = command.Priority;
         if (command.AssignedToId.HasValue) AssignedToId = command.AssignedToId.Value;
+        if (command.ResolutionNotes is not null) ResolutionNotes = command.ResolutionNotes;
         
         if (command.Status == "resolved" && ResolvedAt is null)
         {
             ResolvedAt = DateTime.UtcNow;
         }
         
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Close()
+    {
+        Status = "closed";
+        if (ResolvedAt is null) ResolvedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
 

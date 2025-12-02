@@ -9,6 +9,7 @@ using Moveo_backend.Support.Domain.Model.Aggregate;
 using Moveo_backend.UserManagement.Domain.Model.Aggregates;
 using PaymentEntity = Moveo_backend.Payment.Domain.Model.Aggregate.Payment;
 using NotificationEntity = Moveo_backend.Notification.Domain.Model.Aggregate.Notification;
+using UserReviewEntity = Moveo_backend.UserReview.Domain.Model.Aggregate.UserReview;
 
 namespace Moveo_backend.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -27,6 +28,7 @@ public class AppDbContext : DbContext
     public DbSet<SupportTicket> SupportTickets { get; set; } = null!;
     public DbSet<TicketMessage> TicketMessages { get; set; } = null!;
     public DbSet<Review> Reviews { get; set; } = null!;
+    public DbSet<UserReviewEntity> UserReviews { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -120,21 +122,23 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Rental.Domain.Model.Aggregates.Rental>(entity =>
         {
             entity.HasKey(r => r.Id);
+            entity.Property(r => r.Id).ValueGeneratedOnAdd();
+            entity.Property(r => r.VehicleId).IsRequired();
+            entity.Property(r => r.RenterId).IsRequired();
+            entity.Property(r => r.OwnerId).IsRequired();
+            entity.Property(r => r.StartDate).IsRequired();
+            entity.Property(r => r.EndDate).IsRequired();
+            entity.Property(r => r.TotalPrice).HasColumnType("decimal(18,2)").IsRequired();
             entity.Property(r => r.Status).IsRequired();
-
-            // Owned types para Money
-            entity.OwnsOne(r => r.TotalPrice, tp =>
-            {
-                tp.Property(p => p.Amount).HasColumnName("TotalPrice").HasColumnType("decimal(18,2)");
-                tp.Property(p => p.Currency).HasColumnName("TotalPriceCurrency");
-            });
-
-            // Owned types para Location
-            entity.OwnsOne(r => r.PickupLocation);
-            entity.OwnsOne(r => r.ReturnLocation);
-
-            // Owned type para DateRange (si lo usas en Rental)
-            entity.OwnsOne(r => r.RentalPeriod);
+            entity.Property(r => r.PickupLocation);
+            entity.Property(r => r.ReturnLocation);
+            entity.Property(r => r.Notes);
+            entity.Property(r => r.AdventureRouteId);
+            entity.Property(r => r.VehicleRated);
+            entity.Property(r => r.VehicleRating);
+            entity.Property(r => r.CreatedAt);
+            entity.Property(r => r.AcceptedAt);
+            entity.Property(r => r.CompletedAt);
         });
 
         // -------------------- ADVENTURE ROUTE --------------------
@@ -204,6 +208,19 @@ public class AppDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(r => r.RentalId)
                   .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // -------------------- USER REVIEW --------------------
+        modelBuilder.Entity<UserReviewEntity>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.ReviewerId).IsRequired();
+            entity.Property(r => r.ReviewedUserId).IsRequired();
+            entity.Property(r => r.RentalId).IsRequired();
+            entity.Property(r => r.Rating).IsRequired();
+            entity.Property(r => r.Comment).IsRequired();
+            entity.Property(r => r.Type).IsRequired();
+            entity.Property(r => r.CreatedAt).IsRequired();
         });
     }
 }

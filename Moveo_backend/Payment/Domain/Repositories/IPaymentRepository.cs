@@ -9,4 +9,5 @@ public interface IPaymentRepository : IBaseRepository<PaymentEntity>
     Task<IEnumerable<PaymentEntity>> FindByRecipientIdAsync(int recipientId);
     Task<IEnumerable<PaymentEntity>> FindByRentalIdAsync(int rentalId);
     Task<IEnumerable<PaymentEntity>> FindByStatusAsync(string status);
+    Task<IEnumerable<PaymentEntity>> FindFilteredAsync(int? payerId, int? recipientId, int? rentalId, string? status, string? type);
 }

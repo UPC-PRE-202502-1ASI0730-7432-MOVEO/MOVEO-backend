@@ -123,31 +123,28 @@ namespace Moveo_backend.Migrations
                 name: "Rentals",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     VehicleId = table.Column<int>(type: "int", nullable: false),
-                    RenterId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    OwnerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RenterId = table.Column<int>(type: "int", nullable: false),
+                    OwnerId = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalPriceCurrency = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Status = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PickupLocation_District = table.Column<string>(type: "longtext", nullable: false)
+                    PickupLocation = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PickupLocation_Address = table.Column<string>(type: "longtext", nullable: false)
+                    ReturnLocation = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PickupLocation_Lat = table.Column<double>(type: "double", nullable: false),
-                    PickupLocation_Lng = table.Column<double>(type: "double", nullable: false),
-                    ReturnLocation_District = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ReturnLocation_Address = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ReturnLocation_Lat = table.Column<double>(type: "double", nullable: false),
-                    ReturnLocation_Lng = table.Column<double>(type: "double", nullable: false),
                     Notes = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    AdventureRouteId = table.Column<int>(type: "int", nullable: true),
+                    VehicleRated = table.Column<bool>(type: "tinyint(1)", nullable: true),
+                    VehicleRating = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    AcceptedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                    AcceptedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CompletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -302,9 +299,9 @@ namespace Moveo_backend.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RentalId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ReviewerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    RevieweeId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RentalId = table.Column<int>(type: "int", nullable: false),
+                    ReviewerId = table.Column<int>(type: "int", nullable: false),
+                    RevieweeId = table.Column<int>(type: "int", nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: false),
                     Comment = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),

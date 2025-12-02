@@ -45,6 +45,35 @@ public class Payment
         DueDate = command.DueDate;
     }
 
+    public void Update(UpdatePaymentCommand command)
+    {
+        PayerId = command.PayerId;
+        RecipientId = command.RecipientId;
+        RentalId = command.RentalId;
+        Amount = command.Amount;
+        Currency = command.Currency;
+        Method = command.Method;
+        Status = command.Status;
+        TransactionId = command.TransactionId;
+        Type = command.Type;
+        Description = command.Description;
+        Reason = command.Reason;
+        DueDate = command.DueDate;
+        CompletedAt = command.CompletedAt;
+    }
+
+    public void PartialUpdate(PatchPaymentCommand command)
+    {
+        if (!string.IsNullOrEmpty(command.Status))
+            Status = command.Status;
+        if (!string.IsNullOrEmpty(command.TransactionId))
+            TransactionId = command.TransactionId;
+        if (!string.IsNullOrEmpty(command.Reason))
+            Reason = command.Reason;
+        if (command.CompletedAt.HasValue)
+            CompletedAt = command.CompletedAt;
+    }
+
     public void Complete(string? transactionId)
     {
         Status = "completed";
@@ -62,15 +91,5 @@ public class Payment
     {
         Status = "refunded";
         Reason = reason;
-    }
-
-    public void Update(UpdatePaymentCommand command)
-    {
-        if (!string.IsNullOrEmpty(command.Status))
-            Status = command.Status;
-        if (!string.IsNullOrEmpty(command.TransactionId))
-            TransactionId = command.TransactionId;
-        if (command.CompletedAt.HasValue)
-            CompletedAt = command.CompletedAt;
     }
 }

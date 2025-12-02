@@ -6,9 +6,12 @@ public record NotificationResource(
     string Title,
     string Body,
     string Type,
-    bool IsRead,
-    int? RelatedEntityId,
-    string? RelatedEntityType,
+    bool Read,
+    int? RelatedId,
+    string? RelatedType,
+    string? ActionUrl,
+    string? ActionLabel,
+    object? Metadata,
     DateTime CreatedAt,
-    DateTime UpdatedAt
+    DateTime? ReadAt
 );

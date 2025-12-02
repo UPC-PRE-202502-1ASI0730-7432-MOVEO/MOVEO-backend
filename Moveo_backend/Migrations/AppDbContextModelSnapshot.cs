@@ -208,30 +208,59 @@ namespace Moveo_backend.Migrations
 
             modelBuilder.Entity("Moveo_backend.Rental.Domain.Model.Aggregates.Rental", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("AcceptedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("AdventureRouteId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Notes")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("RenterId")
-                        .HasColumnType("char(36)");
+                    b.Property<string>("PickupLocation")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("RenterId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReturnLocation")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("VehicleRated")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("VehicleRating")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -257,14 +286,14 @@ namespace Moveo_backend.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("RentalId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("RentalId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("RevieweeId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("RevieweeId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("ReviewerId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("ReviewerId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -550,110 +579,6 @@ namespace Moveo_backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Moveo_backend.Rental.Domain.Model.Aggregates.Rental", b =>
-                {
-                    b.OwnsOne("Moveo_backend.Rental.Domain.Model.ValueObjects.Location", "PickupLocation", b1 =>
-                        {
-                            b1.Property<Guid>("RentalId")
-                                .HasColumnType("char(36)");
-
-                            b1.Property<string>("Address")
-                                .IsRequired()
-                                .HasColumnType("longtext");
-
-                            b1.Property<string>("District")
-                                .IsRequired()
-                                .HasColumnType("longtext");
-
-                            b1.Property<double>("Lat")
-                                .HasColumnType("double");
-
-                            b1.Property<double>("Lng")
-                                .HasColumnType("double");
-
-                            b1.HasKey("RentalId");
-
-                            b1.ToTable("Rentals");
-
-                            b1.WithOwner()
-                                .HasForeignKey("RentalId");
-                        });
-
-                    b.OwnsOne("Moveo_backend.Rental.Domain.Model.ValueObjects.Location", "ReturnLocation", b1 =>
-                        {
-                            b1.Property<Guid>("RentalId")
-                                .HasColumnType("char(36)");
-
-                            b1.Property<string>("Address")
-                                .IsRequired()
-                                .HasColumnType("longtext");
-
-                            b1.Property<string>("District")
-                                .IsRequired()
-                                .HasColumnType("longtext");
-
-                            b1.Property<double>("Lat")
-                                .HasColumnType("double");
-
-                            b1.Property<double>("Lng")
-                                .HasColumnType("double");
-
-                            b1.HasKey("RentalId");
-
-                            b1.ToTable("Rentals");
-
-                            b1.WithOwner()
-                                .HasForeignKey("RentalId");
-                        });
-
-                    b.OwnsOne("Moveo_backend.Rental.Domain.Model.ValueObjects.Money", "TotalPrice", b1 =>
-                        {
-                            b1.Property<Guid>("RentalId")
-                                .HasColumnType("char(36)");
-
-                            b1.Property<decimal>("Amount")
-                                .HasColumnType("decimal(18,2)")
-                                .HasColumnName("TotalPrice");
-
-                            b1.Property<string>("Currency")
-                                .IsRequired()
-                                .HasColumnType("longtext")
-                                .HasColumnName("TotalPriceCurrency");
-
-                            b1.HasKey("RentalId");
-
-                            b1.ToTable("Rentals");
-
-                            b1.WithOwner()
-                                .HasForeignKey("RentalId");
-                        });
-
-                    b.OwnsOne("Moveo_backend.Rental.Domain.Model.ValueObjects.DateRange", "RentalPeriod", b1 =>
-                        {
-                            b1.Property<Guid>("RentalId")
-                                .HasColumnType("char(36)");
-
-                            b1.HasKey("RentalId");
-
-                            b1.ToTable("Rentals");
-
-                            b1.WithOwner()
-                                .HasForeignKey("RentalId");
-                        });
-
-                    b.Navigation("PickupLocation")
-                        .IsRequired();
-
-                    b.Navigation("RentalPeriod")
-                        .IsRequired();
-
-                    b.Navigation("ReturnLocation")
-                        .IsRequired();
-
-                    b.Navigation("TotalPrice")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Moveo_backend.Rental.Domain.Model.Aggregates.Review", b =>

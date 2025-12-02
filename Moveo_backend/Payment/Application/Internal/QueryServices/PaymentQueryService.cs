@@ -17,6 +17,12 @@ public class PaymentQueryService(IPaymentRepository paymentRepository) : IPaymen
         return await paymentRepository.ListAsync();
     }
 
+    public async Task<IEnumerable<PaymentEntity>> Handle(GetFilteredPaymentsQuery query)
+    {
+        return await paymentRepository.FindFilteredAsync(
+            query.PayerId, query.RecipientId, query.RentalId, query.Status, query.Type);
+    }
+
     public async Task<IEnumerable<PaymentEntity>> Handle(GetPaymentsByPayerIdQuery query)
     {
         return await paymentRepository.FindByPayerIdAsync(query.PayerId);

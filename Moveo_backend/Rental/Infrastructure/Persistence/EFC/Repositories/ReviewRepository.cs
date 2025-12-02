@@ -12,21 +12,21 @@ public class ReviewRepository : BaseRepository<Review>, IReviewRepository
     {
     }
 
-    public async Task<IEnumerable<Review>> FindByRentalIdAsync(Guid rentalId)
+    public async Task<IEnumerable<Review>> FindByRentalIdAsync(int rentalId)
     {
         return await Context.Set<Review>()
             .Where(r => r.RentalId == rentalId)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Review>> FindByReviewerIdAsync(Guid reviewerId)
+    public async Task<IEnumerable<Review>> FindByReviewerIdAsync(int reviewerId)
     {
         return await Context.Set<Review>()
             .Where(r => r.ReviewerId == reviewerId)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Review>> FindByRevieweeIdAsync(Guid revieweeId)
+    public async Task<IEnumerable<Review>> FindByRevieweeIdAsync(int revieweeId)
     {
         return await Context.Set<Review>()
             .Where(r => r.RevieweeId == revieweeId)

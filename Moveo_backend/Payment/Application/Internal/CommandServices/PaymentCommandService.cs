@@ -29,6 +29,17 @@ public class PaymentCommandService(
         return payment;
     }
 
+    public async Task<PaymentEntity?> Handle(PatchPaymentCommand command)
+    {
+        var payment = await paymentRepository.FindByIdAsync(command.Id);
+        if (payment is null) return null;
+
+        payment.PartialUpdate(command);
+        paymentRepository.Update(payment);
+        await unitOfWork.CompleteAsync();
+        return payment;
+    }
+
     public async Task<bool> Handle(DeletePaymentCommand command)
     {
         var payment = await paymentRepository.FindByIdAsync(command.Id);

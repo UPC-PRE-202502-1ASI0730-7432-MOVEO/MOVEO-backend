@@ -11,8 +11,8 @@ public static class CreateSupportTicketCommandFromResourceAssembler
             resource.UserId,
             resource.Subject,
             resource.Description,
-            resource.Category,
-            resource.Priority
+            resource.GetCategory(),
+            resource.GetPriority()
         );
     }
 }

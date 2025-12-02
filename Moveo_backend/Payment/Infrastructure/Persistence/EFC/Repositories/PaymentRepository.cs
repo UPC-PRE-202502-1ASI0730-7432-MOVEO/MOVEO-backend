@@ -36,4 +36,23 @@ public class PaymentRepository(AppDbContext context)
             .Where(p => p.Status == status)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<PaymentEntity>> FindFilteredAsync(
+        int? payerId, int? recipientId, int? rentalId, string? status, string? type)
+    {
+        var query = Context.Set<PaymentEntity>().AsQueryable();
+        
+        if (payerId.HasValue)
+            query = query.Where(p => p.PayerId == payerId.Value);
+        if (recipientId.HasValue)
+            query = query.Where(p => p.RecipientId == recipientId.Value);
+        if (rentalId.HasValue)
+            query = query.Where(p => p.RentalId == rentalId.Value);
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(p => p.Status == status);
+        if (!string.IsNullOrEmpty(type))
+            query = query.Where(p => p.Type == type);
+            
+        return await query.ToListAsync();
+    }
 }

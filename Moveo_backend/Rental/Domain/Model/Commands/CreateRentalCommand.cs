@@ -1,13 +1,14 @@
-using Moveo_backend.Rental.Domain.Model.ValueObjects;
-
 namespace Moveo_backend.Rental.Domain.Model.Commands;
 
 public record CreateRentalCommand(
     int VehicleId,
-    Guid RenterId,
-    Guid OwnerId,
-    DateRange RentalPeriod,
-    Money TotalPrice,
-    Location PickupLocation,
-    Location ReturnLocation,
-    string? Notes);
+    int RenterId,
+    int OwnerId,
+    DateTime StartDate,
+    DateTime EndDate,
+    decimal TotalPrice,
+    string? PickupLocation,
+    string? ReturnLocation,
+    string? Notes,
+    int? AdventureRouteId
+);
