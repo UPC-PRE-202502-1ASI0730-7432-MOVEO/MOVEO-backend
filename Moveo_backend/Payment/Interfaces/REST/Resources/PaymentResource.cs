@@ -15,5 +15,5 @@ public record PaymentResource(
     string? Reason,
     DateTime? DueDate,
     DateTime CreatedAt,
-    DateTime UpdatedAt
+    DateTime? CompletedAt
 );

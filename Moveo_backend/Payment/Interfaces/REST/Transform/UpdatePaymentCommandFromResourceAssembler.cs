@@ -9,15 +9,8 @@ public static class UpdatePaymentCommandFromResourceAssembler
     {
         return new UpdatePaymentCommand(
             id,
-            resource.Amount,
-            resource.Currency,
-            resource.Method,
             resource.Status,
-            resource.TransactionId,
-            resource.Type,
-            resource.Description,
-            resource.Reason,
-            resource.DueDate
+            resource.TransactionId
         );
     }
 }

@@ -6,9 +6,9 @@ public class Notification
 {
     public int Id { get; private set; }
     public int UserId { get; private set; }
-    public string Title { get; private set; }
-    public string Body { get; private set; }
-    public string Type { get; private set; } // rental_request, rental_accepted, payment_received, etc.
+    public string Title { get; private set; } = string.Empty;
+    public string Body { get; private set; } = string.Empty;
+    public string Type { get; private set; } = string.Empty; // rental_request, rental_accepted, payment_received, etc.
     public bool IsRead { get; private set; }
     public int? RelatedEntityId { get; private set; }
     public string? RelatedEntityType { get; private set; } // rental, payment, review, etc.

@@ -5,12 +5,9 @@ public record CreatePaymentResource(
     int RecipientId,
     int RentalId,
     decimal Amount,
-    string Currency,
+    string? Currency,
     string Method,
-    string Status,
-    string? TransactionId,
     string Type,
     string? Description,
-    string? Reason,
     DateTime? DueDate
 );

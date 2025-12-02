@@ -14,11 +14,8 @@ public static class CreatePaymentCommandFromResourceAssembler
             resource.Amount,
             resource.Currency,
             resource.Method,
-            resource.Status,
-            resource.TransactionId,
             resource.Type,
             resource.Description,
-            resource.Reason,
             resource.DueDate
         );
     }

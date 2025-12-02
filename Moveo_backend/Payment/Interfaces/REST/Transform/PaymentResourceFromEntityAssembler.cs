@@ -22,7 +22,7 @@ public static class PaymentResourceFromEntityAssembler
             entity.Reason,
             entity.DueDate,
             entity.CreatedAt,
-            entity.UpdatedAt
+            entity.CompletedAt
         );
     }
 }

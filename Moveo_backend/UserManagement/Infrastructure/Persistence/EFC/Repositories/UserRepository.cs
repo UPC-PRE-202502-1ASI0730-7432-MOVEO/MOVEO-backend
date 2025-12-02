@@ -24,10 +24,15 @@ public class UserRepository : IUserRepository
         return await _context.Set<User>().FirstOrDefaultAsync(u => u.Id == id);
     }
 
+    public async Task<User?> FindByEmailAsync(string email)
+    {
+        return await _context.Set<User>().FirstOrDefaultAsync(u => u.Email == email);
+    }
+
     public async Task<User?> FindByRoleAsync(string role)
     {
         return await _context.Set<User>()
-            .FirstOrDefaultAsync(u => u.Role.Value.ToLower() == role.ToLower());
+            .FirstOrDefaultAsync(u => u.Role.ToLower() == role.ToLower());
     }
 
     public async Task AddAsync(User user)
@@ -47,7 +52,7 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> ExistsByEmailAsync(string email)
     {
-        return await _context.Set<User>().AnyAsync(u => u.Email.Address == email);
+        return await _context.Set<User>().AnyAsync(u => u.Email == email);
     }
 
     public async Task SaveChangesAsync()

@@ -6,7 +6,7 @@ public interface IUserRepository
 {
     Task<IEnumerable<User>> GetAllAsync();
     Task<User?> FindByIdAsync(int id);
-    
+    Task<User?> FindByEmailAsync(string email);
     Task<User?> FindByRoleAsync(string role);
     Task AddAsync(User user);
     void Update(User user);
