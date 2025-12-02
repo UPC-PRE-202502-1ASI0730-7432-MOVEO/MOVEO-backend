@@ -6,7 +6,7 @@ namespace Moveo_backend.Rental.Domain.Model.Aggregates;
 public class Vehicle
 {
     public Guid Id { get; private set; }
-    public Guid OwnerId { get; private set; }
+    public int OwnerId { get; private set; }
 
     public string Brand { get; private set; }
     public string Model { get; private set; }
@@ -52,7 +52,7 @@ public class Vehicle
 
     // Constructor principal
     public Vehicle(
-        Guid ownerId,
+        int ownerId,
         string brand,
         string model,
         int year,

@@ -14,6 +14,6 @@ public class RentalQueryService
 
     public Task<IEnumerable<Domain.Model.Aggregates.Rental>> GetAllAsync() => _rentalService.GetAllAsync();
     public Task<Domain.Model.Aggregates.Rental?> GetByIdAsync(Guid id) => _rentalService.GetByIdAsync(id);
-    public Task<IEnumerable<Domain.Model.Aggregates.Rental>> GetByUserIdAsync(Guid userId) => _rentalService.GetByUserIdAsync(userId);
+    public Task<IEnumerable<Domain.Model.Aggregates.Rental>> GetByUserIdAsync(int userId) => _rentalService.GetByUserIdAsync(userId);
     public Task<IEnumerable<Domain.Model.Aggregates.Rental>> GetActiveAsync() => _rentalService.GetActiveAsync();
 }

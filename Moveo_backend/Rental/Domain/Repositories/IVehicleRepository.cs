@@ -5,7 +5,7 @@ namespace Moveo_backend.Rental.Domain.Repositories;
 public interface IVehicleRepository
 {
     Task<Vehicle?> GetByIdAsync(Guid id);
-    Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(Guid ownerId);
+    Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId);
     Task<IEnumerable<Vehicle>> GetAllAsync();
     Task<IEnumerable<Vehicle>> GetAvailableAsync(
         string? location = null,

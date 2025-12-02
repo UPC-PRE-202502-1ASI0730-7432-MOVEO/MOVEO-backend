@@ -6,7 +6,7 @@ public interface IRentalRepository
 {
     Task<Model.Aggregates.Rental?> GetByIdAsync(Guid id);
     Task<IEnumerable<Model.Aggregates.Rental>> GetAllAsync();
-    Task<IEnumerable<Model.Aggregates.Rental>> GetByUserIdAsync(Guid userId);
+    Task<IEnumerable<Model.Aggregates.Rental>> GetByUserIdAsync(int userId);
     Task<IEnumerable<Model.Aggregates.Rental>> GetActiveAsync();
 
     Task AddAsync(Model.Aggregates.Rental rental);

@@ -8,7 +8,7 @@ public static class VehicleResourceFromEntityAssembler
     public static VehicleResource ToResourceFromEntity(Vehicle vehicle)
     {
         return new VehicleResource(
-            vehicle.Id,
+            vehicle.Id.ToString(),
             vehicle.OwnerId,
             vehicle.Brand,
             vehicle.Model,
@@ -19,11 +19,17 @@ public static class VehicleResourceFromEntityAssembler
             vehicle.Seats,
             vehicle.DailyPrice.Amount,
             vehicle.DepositAmount.Amount,
-            vehicle.Location.Address,
+            new VehicleLocationResource(
+                vehicle.Location.District,
+                vehicle.Location.Address,
+                vehicle.Location.Lat,
+                vehicle.Location.Lng
+            ),
             vehicle.Features.ToArray(),
             vehicle.Restrictions.ToArray(),
             vehicle.Photos.ToArray(),
-            vehicle.Status
+            vehicle.Status,
+            vehicle.IsAvailable
         );
     }
 }

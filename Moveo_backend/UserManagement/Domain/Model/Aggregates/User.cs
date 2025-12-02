@@ -7,18 +7,11 @@ namespace Moveo_backend.UserManagement.Domain.Model.Aggregates;
 public partial class User
 {
     [Key]
-    public int Id { get; }
+    public int Id { get; private set; }
 
-    [NotMapped] 
     public PersonName Name { get; private set; }
-    
-    [NotMapped] 
     public EmailAddress Email { get; private set; }
-    
-    [NotMapped] 
     public Password Password { get; private set; }
-    
-    [NotMapped] 
     public UserRole Role { get; private set; }
     
     public string Phone { get; private set; }
@@ -26,11 +19,19 @@ public partial class User
     public string LicenseNumber { get; private set; }
     public string Address { get; private set; }
     
-    [NotMapped] 
     public UserPreferences Preferences { get; private set; }
+    
+    // Refresh token support for JWT
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; set; }
 
+    [NotMapped]
     public string FullName => Name.FullName;
+    [NotMapped]
     public string EmailAddress => Email.Address;
+    [NotMapped]
     public string RoleName => Role.Value.ToString();
     
     public User(
@@ -54,6 +55,7 @@ public partial class User
         LicenseNumber = licenseNumber;
         Address = address;
         Preferences = preferences;
+        CreatedAt = DateTime.UtcNow;
     }
     
     public User()
@@ -67,6 +69,7 @@ public partial class User
         Dni = string.Empty;
         LicenseNumber = string.Empty;
         Address = string.Empty;
+        CreatedAt = DateTime.UtcNow;
     }
     
     public void Update(
@@ -80,16 +83,31 @@ public partial class User
         Phone = phone;
         Address = address;
         Preferences = preferences;
+        UpdatedAt = DateTime.UtcNow;
     }
 
 
     public void ChangePassword(string newPassword)
     {
         Password = new Password(newPassword);
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void UpdatePreferences(UserPreferences newPreferences)
     {
         Preferences = newPreferences;
+        UpdatedAt = DateTime.UtcNow;
+    }
+    
+    public void SetRefreshToken(string refreshToken, DateTime expiryTime)
+    {
+        RefreshToken = refreshToken;
+        RefreshTokenExpiryTime = expiryTime;
+    }
+    
+    public void ClearRefreshToken()
+    {
+        RefreshToken = null;
+        RefreshTokenExpiryTime = null;
     }
 }

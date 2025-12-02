@@ -3,7 +3,7 @@ using Moveo_backend.Rental.Domain.Model.ValueObjects;
 namespace Moveo_backend.Rental.Domain.Model.Commands;
 
 public record CreateVehicleCommand(
-    Guid OwnerId,
+    int OwnerId,
     string Brand,
     string Model,
     int Year,

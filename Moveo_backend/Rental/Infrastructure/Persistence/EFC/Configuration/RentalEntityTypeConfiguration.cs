@@ -65,29 +65,35 @@ public class RentalEntityTypeConfiguration : IEntityTypeConfiguration<Domain.Mod
         // ✅ Propiedad de valor: PickupLocation
         builder.OwnsOne(r => r.PickupLocation, pickup =>
         {
+            pickup.Property(l => l.District)
+                .HasColumnName("pickup_district");
+
             pickup.Property(l => l.Address)
                 .HasColumnName("pickup_address")
                 .IsRequired();
 
-            pickup.Property(l => l.City)
-                .HasColumnName("pickup_city");
+            pickup.Property(l => l.Lat)
+                .HasColumnName("pickup_lat");
 
-            pickup.Property(l => l.Country)
-                .HasColumnName("pickup_country");
+            pickup.Property(l => l.Lng)
+                .HasColumnName("pickup_lng");
         });
 
         // ✅ Propiedad de valor: ReturnLocation
         builder.OwnsOne(r => r.ReturnLocation, ret =>
         {
+            ret.Property(l => l.District)
+                .HasColumnName("return_district");
+
             ret.Property(l => l.Address)
                 .HasColumnName("return_address")
                 .IsRequired();
 
-            ret.Property(l => l.City)
-                .HasColumnName("return_city");
+            ret.Property(l => l.Lat)
+                .HasColumnName("return_lat");
 
-            ret.Property(l => l.Country)
-                .HasColumnName("return_country");
+            ret.Property(l => l.Lng)
+                .HasColumnName("return_lng");
         });
     }
 }

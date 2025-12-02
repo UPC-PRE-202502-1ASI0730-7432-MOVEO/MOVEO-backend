@@ -19,10 +19,15 @@ public static class CreateVehicleCommandFromResourceAssembler
             resource.Seats,
             new Money(resource.DailyPrice),       // decimal -> Money
             new Money(resource.DepositAmount),    // decimal -> Money
-            new Location(resource.Location),      // string -> Location
-            resource.Features.ToList(),           // string[] -> List<string>
-            resource.Restrictions.ToList(),
-            resource.Photos.ToList()
+            new Location(                          // LocationResource -> Location
+                resource.Location.District,
+                resource.Location.Address,
+                resource.Location.Lat,
+                resource.Location.Lng
+            ),
+            resource.Features?.ToList() ?? new List<string>(),
+            resource.Restrictions?.ToList() ?? new List<string>(),
+            resource.Photos?.ToList() ?? new List<string>()
         );
     }
 }

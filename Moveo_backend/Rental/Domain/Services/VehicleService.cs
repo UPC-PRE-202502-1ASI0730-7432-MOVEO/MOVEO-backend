@@ -1,31 +1,27 @@
 using Moveo_backend.Rental.Domain.Model.Aggregates;
 using Moveo_backend.Rental.Domain.Model.Commands;
-using Moveo_backend.Rental.Domain.Services;
+using Moveo_backend.Rental.Domain.Repositories;
 
 namespace Moveo_backend.Rental.Domain.Services;
 
 public class VehicleService : IVehicleService
 {
-    private readonly List<Vehicle> _vehicles = new();
+    private readonly IVehicleRepository _vehicleRepository;
 
-    public Task<IEnumerable<Vehicle>> GetAllAsync() => Task.FromResult(_vehicles.AsEnumerable());
-
-    public Task<IEnumerable<Vehicle>> GetAvailableVehiclesAsync()
+    public VehicleService(IVehicleRepository vehicleRepository)
     {
-        var available = _vehicles.Where(v => v.IsAvailable);
-        return Task.FromResult(available);
+        _vehicleRepository = vehicleRepository;
     }
 
-    public Task<Vehicle?> GetByIdAsync(Guid id) =>
-        Task.FromResult(_vehicles.FirstOrDefault(v => v.Id == id));
+    public Task<IEnumerable<Vehicle>> GetAllAsync() => _vehicleRepository.GetAllAsync();
 
-    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(Guid ownerId)
-    {
-        var vehicles = _vehicles.Where(v => v.OwnerId == ownerId);
-        return Task.FromResult(vehicles);
-    }
+    public Task<IEnumerable<Vehicle>> GetAvailableVehiclesAsync() => _vehicleRepository.GetAvailableAsync();
 
-    public Task<Vehicle> CreateVehicleAsync(CreateVehicleCommand command)
+    public Task<Vehicle?> GetByIdAsync(Guid id) => _vehicleRepository.GetByIdAsync(id);
+
+    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId) => _vehicleRepository.GetByOwnerIdAsync(ownerId);
+
+    public async Task<Vehicle> CreateVehicleAsync(CreateVehicleCommand command)
     {
         var vehicle = new Vehicle(
             command.OwnerId,
@@ -39,19 +35,19 @@ public class VehicleService : IVehicleService
             command.DailyPrice,
             command.DepositAmount,
             command.Location,
-            command.Features.ToList(),
-            command.Restrictions.ToList(),
-            command.Photos.ToList()
+            command.Features,
+            command.Restrictions,
+            command.Photos
         );
 
-        _vehicles.Add(vehicle);
-        return Task.FromResult(vehicle);
+        await _vehicleRepository.AddAsync(vehicle);
+        return vehicle;
     }
 
-    public Task<Vehicle?> UpdateVehicleAsync(UpdateVehicleCommand command)
+    public async Task<Vehicle?> UpdateVehicleAsync(UpdateVehicleCommand command)
     {
-        var vehicle = _vehicles.FirstOrDefault(v => v.Id == command.Id);
-        if (vehicle == null) return Task.FromResult<Vehicle?>(null);
+        var vehicle = await _vehicleRepository.GetByIdAsync(command.Id);
+        if (vehicle == null) return null;
 
         vehicle.UpdateDetails(
             command.Brand,
@@ -64,20 +60,31 @@ public class VehicleService : IVehicleService
             command.DailyPrice,
             command.DepositAmount,
             command.Location,
-            command.Features.ToList(),
-            command.Restrictions.ToList(),
-            command.Photos.ToList()
+            command.Features,
+            command.Restrictions,
+            command.Photos
         );
 
-        return Task.FromResult(vehicle);
+        await _vehicleRepository.UpdateAsync(vehicle);
+        return vehicle;
     }
 
-    public Task<bool> DeleteVehicleAsync(Guid id)
+    public async Task UpdateVehicleStatusAsync(Guid id, string status)
     {
-        var vehicle = _vehicles.FirstOrDefault(v => v.Id == id);
-        if (vehicle == null) return Task.FromResult(false);
+        var vehicle = await _vehicleRepository.GetByIdAsync(id);
+        if (vehicle != null)
+        {
+            vehicle.ChangeStatus(status);
+            await _vehicleRepository.UpdateAsync(vehicle);
+        }
+    }
 
-        _vehicles.Remove(vehicle);
-        return Task.FromResult(true);
+    public async Task<bool> DeleteVehicleAsync(Guid id)
+    {
+        var vehicle = await _vehicleRepository.GetByIdAsync(id);
+        if (vehicle == null) return false;
+
+        await _vehicleRepository.DeleteAsync(id);
+        return true;
     }
 }

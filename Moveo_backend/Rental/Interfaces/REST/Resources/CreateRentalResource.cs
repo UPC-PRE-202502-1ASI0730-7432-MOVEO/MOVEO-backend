@@ -2,8 +2,8 @@ namespace Moveo_backend.Rental.Interfaces.REST.Resources;
 
 public record CreateRentalResource(
     Guid VehicleId,
-    Guid RenterId,
-    Guid OwnerId,
+    int RenterId,
+    int OwnerId,
     DateTime StartDate,
     DateTime EndDate,
     decimal TotalPrice,

@@ -7,7 +7,7 @@ public interface IRentalService
 {
     Task<Model.Aggregates.Rental?> GetByIdAsync(Guid id);
     Task<IEnumerable<Model.Aggregates.Rental>> GetAllAsync();
-    Task<IEnumerable<Model.Aggregates.Rental>> GetByUserIdAsync(Guid userId);
+    Task<IEnumerable<Model.Aggregates.Rental>> GetByUserIdAsync(int userId);
     Task<IEnumerable<Model.Aggregates.Rental>> GetActiveAsync();
 
     Task<Model.Aggregates.Rental> CreateRentalAsync(CreateRentalCommand command);

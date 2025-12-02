@@ -24,7 +24,7 @@ public class RentalService : IRentalService
     public Task<Model.Aggregates.Rental?> GetByIdAsync(Guid id) =>
         _rentalRepository.GetByIdAsync(id);
 
-    public Task<IEnumerable<Model.Aggregates.Rental>> GetByUserIdAsync(Guid userId) =>
+    public Task<IEnumerable<Model.Aggregates.Rental>> GetByUserIdAsync(int userId) =>
         _rentalRepository.GetByUserIdAsync(userId);
 
     public Task<bool> IsVehicleCurrentlyRentedAsync(Guid vehicleId) =>

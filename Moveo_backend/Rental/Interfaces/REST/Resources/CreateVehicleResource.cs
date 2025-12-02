@@ -1,7 +1,15 @@
 namespace Moveo_backend.Rental.Interfaces.REST.Resources;
 
+// DTO para la ubicación del vehículo
+public record LocationResource(
+    string District,
+    string Address,
+    double? Lat,
+    double? Lng
+);
+
 public record CreateVehicleResource(
-    Guid OwnerId,
+    int OwnerId,
     string Brand,
     string Model,
     int Year,
@@ -11,8 +19,15 @@ public record CreateVehicleResource(
     int Seats,
     decimal DailyPrice,
     decimal DepositAmount,
-    string Location,
-    string[] Features,
-    string[] Restrictions,
-    string[] Photos
-);
+    LocationResource Location,
+    string? LicensePlate,
+    string? Status,
+    string? Description,
+    string[]? Images,
+    string[]? Features,
+    string[]? Restrictions
+)
+{
+    // Propiedades con valores por defecto para compatibilidad
+    public string[] Photos => Images ?? Array.Empty<string>();
+};

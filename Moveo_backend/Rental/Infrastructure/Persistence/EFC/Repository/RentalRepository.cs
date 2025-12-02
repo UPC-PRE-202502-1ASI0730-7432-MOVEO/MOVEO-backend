@@ -24,7 +24,7 @@ public class RentalRepository : IRentalRepository
     public Task<Domain.Model.Aggregates.Rental?> GetByIdAsync(Guid id) =>
         _context.Rentals.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
 
-    public Task<IEnumerable<Domain.Model.Aggregates.Rental>> GetByUserIdAsync(Guid userId) =>
+    public Task<IEnumerable<Domain.Model.Aggregates.Rental>> GetByUserIdAsync(int userId) =>
         _context.Rentals.Where(r => r.RenterId == userId || r.OwnerId == userId)
             .AsNoTracking().ToListAsync()
             .ContinueWith(t => t.Result.AsEnumerable());

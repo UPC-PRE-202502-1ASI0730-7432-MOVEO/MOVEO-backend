@@ -1,19 +1,110 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Moveo_backend.Rental.Domain.Model.Commands;
+using Moveo_backend.Rental.Domain.Model.ValueObjects;
 using Moveo_backend.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Moveo_backend.UserManagement.Domain.Services;
 using Moveo_backend.Rental.Domain.Services;
 using Moveo_backend.Rental.Domain.Repositories;
 using Moveo_backend.Rental.Infrastructure.Persistence.EFC.Repository;
 using Moveo_backend.UserManagement.Domain.Model.Commands;
+using Moveo_backend.IAM.Infrastructure.Tokens;
+using Moveo_backend.IAM.Infrastructure.Hashing;
+using Moveo_backend.IAM.Domain.Services;
+using Moveo_backend.IAM.Application.Internal;
+using Moveo_backend.Rental.Interfaces.REST.Resources;
+using Moveo_backend.Rental.Interfaces.REST.Transform;
+using Moveo_backend.Notifications.Domain.Services;
+using Moveo_backend.Notifications.Domain.Repositories;
+using Moveo_backend.Notifications.Infrastructure.Persistence.EFC.Repository;
+using Moveo_backend.Notifications.Interfaces.REST.Resources;
+using Moveo_backend.Notifications.Interfaces.REST.Transform;
+using Moveo_backend.Notifications.Domain.Model.Commands;
+using Moveo_backend.AdventureRoutes.Domain.Services;
+using Moveo_backend.AdventureRoutes.Domain.Repositories;
+using Moveo_backend.AdventureRoutes.Infrastructure.Persistence.EFC.Repository;
+using Moveo_backend.AdventureRoutes.Interfaces.REST.Resources;
+using Moveo_backend.AdventureRoutes.Interfaces.REST.Transform;
+using Moveo_backend.AdventureRoutes.Domain.Model.Commands;
+using Moveo_backend.SupportTickets.Domain.Services;
+using Moveo_backend.SupportTickets.Domain.Repositories;
+using Moveo_backend.SupportTickets.Infrastructure.Persistence.EFC.Repository;
+using Moveo_backend.Payments.Domain.Services;
+using Moveo_backend.Payments.Domain.Repositories;
+using Moveo_backend.Payments.Infrastructure.Persistence;
+using Moveo_backend.Payments.Application;
+using Moveo_backend.Reviews.Domain.Services;
+using Moveo_backend.Reviews.Domain.Repositories;
+using Moveo_backend.Reviews.Infrastructure.Persistence;
+using Moveo_backend.Reviews.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ------------------------- Services & Swagger -------------------------
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { Title = "Moveo Backend API", Version = "v1" });
+    
+    // Add JWT Authentication to Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+// ------------------------- JWT Configuration -------------------------
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+builder.Services.Configure<JwtSettings>(jwtSettings);
+
+var secretKey = jwtSettings["Secret"] ?? throw new Exception("JWT Secret is not configured");
+var key = Encoding.UTF8.GetBytes(secretKey);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidateAudience = true,
+        ValidAudience = jwtSettings["Audience"],
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
 
 // ------------------------- CORS -------------------------
 var corsPolicyName = "AllowMoveoFrontend";
@@ -66,6 +157,36 @@ builder.Services.AddScoped<IRentalRepository, RentalRepository>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IRentalService, RentalService>();
 
+// UserManagement Services (for UsersController)
+builder.Services.AddScoped<Moveo_backend.UserManagement.Domain.Repositories.IUserRepository, Moveo_backend.UserManagement.Infrastructure.Persistence.EFC.Repositories.UserRepository>();
+builder.Services.AddScoped<Moveo_backend.UserManagement.Domain.Services.IUserCommandService, Moveo_backend.UserManagement.Application.CommandServices.UserCommandService>();
+builder.Services.AddScoped<Moveo_backend.UserManagement.Domain.Services.IUserQueryService, Moveo_backend.UserManagement.Application.QueryServices.UserQueryService>();
+
+// Notifications Services
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// Adventure Routes Services
+builder.Services.AddScoped<IAdventureRouteRepository, AdventureRouteRepository>();
+builder.Services.AddScoped<IAdventureRouteService, AdventureRouteService>();
+
+// Support Tickets Services
+builder.Services.AddScoped<ISupportTicketRepository, SupportTicketRepository>();
+builder.Services.AddScoped<ISupportTicketService, SupportTicketService>();
+
+// Payments Services
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+// Reviews Services
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+
+// IAM Services
+builder.Services.AddScoped<IHashingService, BcryptHashingService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 var app = builder.Build();
 
 // ------------------------- Ensure Database Created -------------------------
@@ -93,132 +214,15 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
-// ------------------------- USERS Endpoints -------------------------
-app.MapGet("/api/v1/users", async ([FromServices] IUserService userService) =>
-{
-    var users = await userService.GetAllUsersAsync();
-    return Results.Ok(users);
-})
-.WithName("GetUsers")
-.WithTags("Users");
+// Authentication & Authorization
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.MapPost("/api/v1/users", async ([FromBody] CreateUserCommand command, [FromServices] IUserService userService) =>
-{
-    var createdUser = await userService.CreateUserAsync(command);
-    return Results.Created($"/api/v1/users/{createdUser.Id}", createdUser);
-})
-.WithName("CreateUser")
-.WithTags("Users");
+// Map controllers (for AuthController and other future controllers)
+app.MapControllers();
 
-app.MapPut("/api/v1/users/{id:int}", async (int id, [FromBody] UpdateUserCommand command, [FromServices] IUserService userService) =>
-{
-    var updatedUser = await userService.UpdateUserAsync(id, command);
-    return updatedUser != null ? Results.Ok(updatedUser) : Results.NotFound();
-})
-.WithName("UpdateUser")
-.WithTags("Users");
-
-app.MapPut("/api/v1/users/{id:int}/password", async (int id, [FromBody] ChangePasswordCommand command, [FromServices] IUserService userService) =>
-{
-    var success = await userService.ChangePasswordAsync(id, command);
-    return success ? Results.NoContent() : Results.NotFound();
-})
-.WithName("ChangeUserPassword")
-.WithTags("Users");
-
-app.MapPut("/api/v1/users/{id:int}/role", async (int id, [FromBody] ChangeUserRoleCommand command, [FromServices] IUserService userService) =>
-{
-    var success = await userService.ChangeUserRoleAsync(id, command);
-    return success ? Results.NoContent() : Results.NotFound();
-})
-.WithName("ChangeUserRole")
-.WithTags("Users");
-
-app.MapDelete("/api/v1/users/{id:int}", async (int id, [FromServices] IUserService userService) =>
-{
-    var deleted = await userService.DeleteUserAsync(id);
-    return deleted ? Results.NoContent() : Results.NotFound();
-})
-.WithName("DeleteUser")
-.WithTags("Users");
-
-// ------------------------- VEHICLES Endpoints -------------------------
-app.MapGet("/api/v1/vehicles", async ([FromServices] IVehicleService vehicleService) =>
-{
-    var vehicles = await vehicleService.GetAllAsync();
-    return Results.Ok(vehicles);
-})
-.WithName("GetVehicles")
-.WithTags("Vehicles");
-
-app.MapPost("/api/v1/vehicles", async ([FromBody] CreateVehicleCommand command, [FromServices] IVehicleService vehicleService) =>
-{
-    var vehicle = await vehicleService.CreateVehicleAsync(command);
-    return Results.Created($"/api/v1/vehicles/{vehicle.Id}", vehicle);
-})
-.WithName("CreateVehicle")
-.WithTags("Vehicles");
-
-app.MapPut("/api/v1/vehicles/{id:guid}", async (Guid id, [FromBody] UpdateVehicleCommand command, [FromServices] IVehicleService vehicleService) =>
-{
-    var updatedCommand = command with { Id = id };
-    var updated = await vehicleService.UpdateVehicleAsync(updatedCommand);
-    return updated != null ? Results.Ok(updated) : Results.NotFound();
-})
-.WithName("UpdateVehicle")
-.WithTags("Vehicles");
-
-app.MapDelete("/api/v1/vehicles/{id:guid}", async (Guid id, [FromServices] IVehicleService vehicleService) =>
-{
-    var deleted = await vehicleService.DeleteVehicleAsync(id);
-    return deleted ? Results.NoContent() : Results.NotFound();
-})
-.WithName("DeleteVehicle")
-.WithTags("Vehicles");
-
-// ------------------------- RENTALS Endpoints -------------------------
-app.MapGet("/api/v1/rentals", async ([FromServices] IRentalService rentalService) =>
-{
-    var rentals = await rentalService.GetAllAsync();
-    return Results.Ok(rentals);
-})
-.WithName("GetRentals")
-.WithTags("Rentals");
-
-app.MapPost("/api/v1/rentals", async ([FromBody] CreateRentalCommand command, [FromServices] IRentalService rentalService) =>
-{
-    var rental = await rentalService.CreateRentalAsync(command);
-    return Results.Created($"/api/v1/rentals/{rental.Id}", rental);
-})
-.WithName("CreateRental")
-.WithTags("Rentals");
-
-app.MapPut("/api/v1/rentals/{id:guid}", async (Guid id, [FromBody] UpdateRentalCommand command, [FromServices] IRentalService rentalService) =>
-{
-    var updatedCommand = command with { Id = id };
-    var updated = await rentalService.UpdateRentalAsync(updatedCommand);
-    return updated != null ? Results.Ok(updated) : Results.NotFound();
-})
-.WithName("UpdateRental")
-.WithTags("Rentals");
-
-app.MapPut("/api/v1/rentals/{id:guid}/cancel", async (Guid id, [FromBody] CancelRentalCommand command, [FromServices] IRentalService rentalService) =>
-{
-    var updatedCommand = command with { Id = id };
-    var success = await rentalService.CancelRentalAsync(updatedCommand);
-    return success ? Results.NoContent() : Results.NotFound();
-})
-.WithName("CancelRental")
-.WithTags("Rentals");
-
-app.MapPut("/api/v1/rentals/{id:guid}/finish", async (Guid id, [FromBody] FinishRentalCommand command, [FromServices] IRentalService rentalService) =>
-{
-    var updatedCommand = command with { Id = id };
-    var success = await rentalService.FinishRentalAsync(updatedCommand);
-    return success ? Results.NoContent() : Results.NotFound();
-})
-.WithName("FinishRental")
-.WithTags("Rentals");
+// Note: Users endpoints are handled by UsersController
+// Note: Rentals endpoints are handled by RentalController
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Urls.Add($"http://*:{port}");

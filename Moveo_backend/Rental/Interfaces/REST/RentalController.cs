@@ -7,7 +7,7 @@ using Moveo_backend.Rental.Interfaces.REST.Transform;
 namespace Moveo_backend.Rental.Interfaces.REST;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/rentals")]
 public class RentalController : ControllerBase
 {
     private readonly IRentalService _rentalService;
@@ -108,8 +108,8 @@ public class RentalController : ControllerBase
     }
 
     // 🔹 GET /api/rental/user/{userId}
-    [HttpGet("user/{userId:guid}")]
-    public async Task<IActionResult> GetByUserId(Guid userId)
+    [HttpGet("user/{userId:int}")]
+    public async Task<IActionResult> GetByUserId(int userId)
     {
         var rentals = await _rentalService.GetByUserIdAsync(userId);
         var resources = rentals.Select(RentalResourceFromEntityAssembler.ToResourceFromEntity);

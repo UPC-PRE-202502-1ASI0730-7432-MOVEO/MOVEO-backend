@@ -6,8 +6,8 @@ public class Rental
 {
     public Guid Id { get; private set; }
     public Guid VehicleId { get; private set; }
-    public Guid RenterId { get; private set; }
-    public Guid OwnerId { get; private set; }
+    public int RenterId { get; private set; }
+    public int OwnerId { get; private set; }
 
     public DateRange RentalPeriod { get; private set; }
 
@@ -27,8 +27,8 @@ public class Rental
 
     public Rental(
         Guid vehicleId,
-        Guid renterId,
-        Guid ownerId,
+        int renterId,
+        int ownerId,
         DateRange rentalPeriod,
         Money totalPrice,        
         Location pickupLocation,

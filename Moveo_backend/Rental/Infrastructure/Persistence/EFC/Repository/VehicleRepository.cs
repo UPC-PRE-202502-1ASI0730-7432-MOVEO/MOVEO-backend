@@ -17,7 +17,7 @@ public class VehicleRepository : IVehicleRepository
     public Task<IEnumerable<Vehicle>> GetAllAsync() =>
         _context.Vehicles.AsNoTracking().ToListAsync().ContinueWith(t => t.Result.AsEnumerable());
 
-    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(Guid ownerId) =>
+    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId) =>
         _context.Vehicles.Where(v => v.OwnerId == ownerId).AsNoTracking().ToListAsync()
             .ContinueWith(t => t.Result.AsEnumerable());
 
