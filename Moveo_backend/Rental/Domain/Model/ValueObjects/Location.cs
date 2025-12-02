@@ -2,31 +2,20 @@ namespace Moveo_backend.Rental.Domain.Model.ValueObjects;
 
 public record Location
 {
-    public string District { get; }
-    public string Address { get; }
-    public double? Lat { get; }
-    public double? Lng { get; }
+    public string District { get; init; } = string.Empty;
+    public string Address { get; init; } = string.Empty;
+    public double Lat { get; init; }
+    public double Lng { get; init; }
     
-    protected Location()
-    {
-        District = string.Empty;
-        Address = string.Empty;
-    }
+    protected Location() { }
     
-    public Location(string district, string address, double? lat = null, double? lng = null)
+    public Location(string district, string address, double lat, double lng)
     {
-        if (string.IsNullOrWhiteSpace(address))
-            throw new ArgumentException("Address cannot be blank");
-
         District = district ?? string.Empty;
-        Address = address;
+        Address = address ?? string.Empty;
         Lat = lat;
         Lng = lng;
     }
 
-    // Constructor simple para compatibilidad
-    public Location(string address) : this(string.Empty, address, null, null) { }
-
-    public override string ToString() =>
-        string.IsNullOrWhiteSpace(District) ? Address : $"{Address}, {District}";
+    public override string ToString() => $"{Address}, {District}";
 }

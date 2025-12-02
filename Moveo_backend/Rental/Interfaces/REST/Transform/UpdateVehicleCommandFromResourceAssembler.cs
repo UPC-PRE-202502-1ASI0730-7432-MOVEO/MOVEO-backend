@@ -6,10 +6,11 @@ namespace Moveo_backend.Rental.Interfaces.REST.Transform;
 
 public static class UpdateVehicleCommandFromResourceAssembler
 {
-    public static UpdateVehicleCommand ToCommandFromResource(UpdateVehicleResource resource)
+    public static UpdateVehicleCommand ToCommandFromResource(int id, UpdateVehicleResource resource)
     {
         return new UpdateVehicleCommand(
-            resource.Id,
+            id,
+            resource.OwnerId,
             resource.Brand,
             resource.Model,
             resource.Year,
@@ -17,12 +18,20 @@ public static class UpdateVehicleCommandFromResourceAssembler
             resource.Transmission,
             resource.FuelType,
             resource.Seats,
+            resource.LicensePlate,
             new Money(resource.DailyPrice),
-            new Money(resource.DepositAmount),
-            new Location(resource.Location),
-            resource.Features.ToList(),
-            resource.Restrictions.ToList(),
-            resource.Photos.ToList()
+            new Money(resource.DepositAmount ?? 0),
+            new Location(
+                resource.Location.District,
+                resource.Location.Address,
+                resource.Location.Lat,
+                resource.Location.Lng
+            ),
+            resource.Status,
+            resource.Description,
+            resource.Features ?? new List<string>(),
+            resource.Restrictions ?? new List<string>(),
+            resource.Images ?? new List<string>()
         );
     }
 }

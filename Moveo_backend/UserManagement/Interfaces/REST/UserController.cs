@@ -12,7 +12,7 @@ using Moveo_backend.UserManagement.Interfaces.REST.Transform;
 namespace Moveo_backend.UserManagement.Interfaces.REST;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/users")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available User Endpoints")]
 public class UsersController(
@@ -38,13 +38,22 @@ public class UsersController(
     
     [HttpGet]
     [SwaggerOperation(
-        Summary = "Get All Users",
-        Description = "Retrieve a list of all registered users",
+        Summary = "Get All Users or Search by Email",
+        Description = "Retrieve a list of all registered users or search by email",
         OperationId = "GetAllUsers"
     )]
     [SwaggerResponse(StatusCodes.Status200OK, "The list of users", typeof(IEnumerable<UserResource>))]
-    public async Task<IActionResult> GetAllUsers()
+    public async Task<IActionResult> GetAllUsers([FromQuery] string? email = null)
     {
+        if (!string.IsNullOrEmpty(email))
+        {
+            var getUserByEmailQuery = new GetUserByEmailQuery(email);
+            var user = await userQueryService.Handle(getUserByEmailQuery);
+            if (user is null) return Ok(Array.Empty<UserResource>());
+            var resource = UserResourceFromEntityAssembler.ToResourceFromEntity(user);
+            return Ok(new[] { resource });
+        }
+        
         var getAllUsersQuery = new GetAllUsersQuery();
         var users = await userQueryService.Handle(getAllUsersQuery);
         var resources = users.Select(UserResourceFromEntityAssembler.ToResourceFromEntity);
@@ -77,6 +86,23 @@ public class UsersController(
     [SwaggerResponse(StatusCodes.Status200OK, "The user was successfully updated", typeof(UserResource))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "User not found")]
     public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserResource resource)
+    {
+        var updateUserCommand = UpdateUserCommandFromResourceAssembler.ToCommandFromResource(resource, userId);
+        var updatedUser = await userCommandService.HandleUpdate(updateUserCommand);
+        if (updatedUser is null) return NotFound();
+        var userResource = UserResourceFromEntityAssembler.ToResourceFromEntity(updatedUser);
+        return Ok(userResource);
+    }
+    
+    [HttpPatch("{userId:int}")]
+    [SwaggerOperation(
+        Summary = "Partially Update a User",
+        Description = "Partially update an existing user's information",
+        OperationId = "PatchUser"
+    )]
+    [SwaggerResponse(StatusCodes.Status200OK, "The user was successfully updated", typeof(UserResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "User not found")]
+    public async Task<IActionResult> PatchUser(int userId, [FromBody] UpdateUserResource resource)
     {
         var updateUserCommand = UpdateUserCommandFromResourceAssembler.ToCommandFromResource(resource, userId);
         var updatedUser = await userCommandService.HandleUpdate(updateUserCommand);

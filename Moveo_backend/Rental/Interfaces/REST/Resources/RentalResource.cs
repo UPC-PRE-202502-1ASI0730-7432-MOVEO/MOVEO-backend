@@ -1,15 +1,21 @@
 namespace Moveo_backend.Rental.Interfaces.REST.Resources;
 
 public record RentalResource(
-    Guid Id,
-    Guid VehicleId,
+    int Id,
+    int VehicleId,
     int RenterId,
     int OwnerId,
-    string Status,
     DateTime StartDate,
     DateTime EndDate,
     decimal TotalPrice,
-    string PickupLocation,
-    string ReturnLocation,
-    string? Notes
+    string Status,
+    string? PickupLocation,
+    string? ReturnLocation,
+    string? Notes,
+    int? AdventureRouteId,
+    bool? VehicleRated,
+    int? VehicleRating,
+    DateTime CreatedAt,
+    DateTime? AcceptedAt,
+    DateTime? CompletedAt
 );

@@ -4,7 +4,7 @@ using Moveo_backend.Rental.Domain.Services;
 
 namespace Moveo_backend.Rental.Application.CommandServices;
 
-public class VehicleCommandService
+public class VehicleCommandService : IVehicleCommandService
 {
     private readonly IVehicleService _vehicleService;
 
@@ -13,12 +13,15 @@ public class VehicleCommandService
         _vehicleService = vehicleService;
     }
 
-    public Task<Vehicle> Handle(CreateVehicleCommand command)
+    public Task<Vehicle> CreateVehicleAsync(CreateVehicleCommand command)
         => _vehicleService.CreateVehicleAsync(command);
 
-    public Task<Vehicle?> Handle(UpdateVehicleCommand command)
+    public Task<Vehicle?> UpdateVehicleAsync(UpdateVehicleCommand command)
         => _vehicleService.UpdateVehicleAsync(command);
 
-    public Task<bool> HandleDelete(Guid id)
+    public Task<Vehicle?> PatchVehicleAsync(PatchVehicleCommand command)
+        => _vehicleService.PatchVehicleAsync(command);
+
+    public Task<bool> DeleteVehicleAsync(int id)
         => _vehicleService.DeleteVehicleAsync(id);
 }

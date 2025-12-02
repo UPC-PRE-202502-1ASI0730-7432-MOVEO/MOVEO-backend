@@ -15,11 +15,20 @@ public class VehicleService : IVehicleService
 
     public Task<IEnumerable<Vehicle>> GetAllAsync() => _vehicleRepository.GetAllAsync();
 
-    public Task<IEnumerable<Vehicle>> GetAvailableVehiclesAsync() => _vehicleRepository.GetAvailableAsync();
+    public Task<IEnumerable<Vehicle>> GetFilteredAsync(
+        int? ownerId = null,
+        string? status = null,
+        decimal? minPrice = null,
+        decimal? maxPrice = null,
+        string? district = null)
+    {
+        return _vehicleRepository.GetFilteredAsync(ownerId, status, minPrice, maxPrice, district);
+    }
 
-    public Task<Vehicle?> GetByIdAsync(Guid id) => _vehicleRepository.GetByIdAsync(id);
+    public Task<Vehicle?> GetByIdAsync(int id) => _vehicleRepository.GetByIdAsync(id);
 
-    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId) => _vehicleRepository.GetByOwnerIdAsync(ownerId);
+    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId) => 
+        _vehicleRepository.GetByOwnerIdAsync(ownerId);
 
     public async Task<Vehicle> CreateVehicleAsync(CreateVehicleCommand command)
     {
@@ -32,12 +41,14 @@ public class VehicleService : IVehicleService
             command.Transmission,
             command.FuelType,
             command.Seats,
+            command.LicensePlate,
             command.DailyPrice,
             command.DepositAmount,
             command.Location,
+            command.Description,
             command.Features,
             command.Restrictions,
-            command.Photos
+            command.Images
         );
 
         await _vehicleRepository.AddAsync(vehicle);
@@ -50,6 +61,7 @@ public class VehicleService : IVehicleService
         if (vehicle == null) return null;
 
         vehicle.UpdateDetails(
+            command.OwnerId,
             command.Brand,
             command.Model,
             command.Year,
@@ -57,34 +69,38 @@ public class VehicleService : IVehicleService
             command.Transmission,
             command.FuelType,
             command.Seats,
+            command.LicensePlate,
             command.DailyPrice,
             command.DepositAmount,
             command.Location,
+            command.Status,
+            command.Description,
             command.Features,
             command.Restrictions,
-            command.Photos
+            command.Images
         );
 
         await _vehicleRepository.UpdateAsync(vehicle);
         return vehicle;
     }
 
-    public async Task UpdateVehicleStatusAsync(Guid id, string status)
+    public async Task<Vehicle?> PatchVehicleAsync(PatchVehicleCommand command)
     {
-        var vehicle = await _vehicleRepository.GetByIdAsync(id);
-        if (vehicle != null)
-        {
-            vehicle.ChangeStatus(status);
-            await _vehicleRepository.UpdateAsync(vehicle);
-        }
+        var vehicle = await _vehicleRepository.GetByIdAsync(command.Id);
+        if (vehicle == null) return null;
+
+        vehicle.PartialUpdate(
+            command.DailyPrice?.Amount,
+            command.Status,
+            command.Description,
+            command.Features,
+            command.Restrictions,
+            command.Images
+        );
+
+        await _vehicleRepository.UpdateAsync(vehicle);
+        return vehicle;
     }
 
-    public async Task<bool> DeleteVehicleAsync(Guid id)
-    {
-        var vehicle = await _vehicleRepository.GetByIdAsync(id);
-        if (vehicle == null) return false;
-
-        await _vehicleRepository.DeleteAsync(id);
-        return true;
-    }
+    public Task<bool> DeleteVehicleAsync(int id) => _vehicleRepository.DeleteAsync(id);
 }

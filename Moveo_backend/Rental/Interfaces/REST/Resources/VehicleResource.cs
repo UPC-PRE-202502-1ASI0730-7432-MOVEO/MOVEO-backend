@@ -1,14 +1,7 @@
 namespace Moveo_backend.Rental.Interfaces.REST.Resources;
 
-public record VehicleLocationResource(
-    string District,
-    string Address,
-    double? Lat,
-    double? Lng
-);
-
 public record VehicleResource(
-    string Id,
+    int Id,
     int OwnerId,
     string Brand,
     string Model,
@@ -17,14 +10,15 @@ public record VehicleResource(
     string Transmission,
     string FuelType,
     int Seats,
-    decimal DailyPrice,
-    decimal DepositAmount,
+    string LicensePlate,
     VehicleLocationResource Location,
-    string[] Features,
-    string[] Restrictions,
-    string[] Photos,
+    decimal DailyPrice,
+    decimal? DepositAmount,
     string Status,
-    bool IsAvailable
+    string? Description,
+    List<string>? Images,
+    List<string>? Features,
+    List<string>? Restrictions,
+    DateTime CreatedAt,
+    DateTime UpdatedAt
 );
-
-public record UpdateVehicleStatusResource(string Status);

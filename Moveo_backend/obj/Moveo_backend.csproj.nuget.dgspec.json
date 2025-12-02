@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj": {}
+    "c:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj": {
+    "c:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
+        "projectUniqueName": "c:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
         "projectName": "Moveo_backend",
-        "projectPath": "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
+        "projectPath": "c:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\Moveo_backend.csproj",
         "packagesPath": "C:\\Users\\goku6\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\obj\\",
+        "outputPath": "c:\\Users\\goku6\\OneDrive\\Documentos\\Development\\Codigo\\MOVEO-backend\\Moveo_backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -73,6 +73,12 @@
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[9.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.0, )"
             },
             "Microsoft.EntityFrameworkCore.Relational": {
               "target": "Package",

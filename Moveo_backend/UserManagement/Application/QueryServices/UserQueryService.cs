@@ -28,4 +28,9 @@ public class UserQueryService : IUserQueryService
     {
         return await _userRepository.FindByRoleAsync(query.Role);
     }
+    
+    public async Task<User?> Handle(GetUserByEmailQuery query)
+    {
+        return await _userRepository.FindByEmailAsync(query.Email);
+    }
 }

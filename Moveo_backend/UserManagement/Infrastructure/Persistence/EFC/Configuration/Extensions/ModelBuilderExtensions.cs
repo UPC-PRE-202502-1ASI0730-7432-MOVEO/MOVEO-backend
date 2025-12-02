@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Moveo_backend.UserManagement.Domain.Model.Aggregates;
-using Moveo_backend.UserManagement.Infrastructure.Persistence.EFC.Configuration;
 
 namespace Moveo_backend.UserManagement.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
@@ -8,8 +7,8 @@ public static class ModelBuilderExtensions
 {
     public static void ApplyUserManagementConfiguration(this ModelBuilder builder)
     {
-        // Apply configuration for the User aggregate
-        builder.ApplyConfiguration(new UserEntityTypeConfiguration());
+        // User configuration is now done in AppDbContext.OnModelCreating
+        // This method is kept for future entity configurations
     }
 
     /// <summary>

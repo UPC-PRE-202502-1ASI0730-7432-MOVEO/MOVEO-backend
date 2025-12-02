@@ -14,33 +14,46 @@ public class VehicleRepository : IVehicleRepository
         _context = context;
     }
 
-    public Task<IEnumerable<Vehicle>> GetAllAsync() =>
-        _context.Vehicles.AsNoTracking().ToListAsync().ContinueWith(t => t.Result.AsEnumerable());
+    public async Task<IEnumerable<Vehicle>> GetAllAsync()
+    {
+        return await _context.Vehicles.AsNoTracking().ToListAsync();
+    }
 
-    public Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId) =>
-        _context.Vehicles.Where(v => v.OwnerId == ownerId).AsNoTracking().ToListAsync()
-            .ContinueWith(t => t.Result.AsEnumerable());
+    public async Task<IEnumerable<Vehicle>> GetByOwnerIdAsync(int ownerId)
+    {
+        return await _context.Vehicles
+            .Where(v => v.OwnerId == ownerId)
+            .AsNoTracking()
+            .ToListAsync();
+    }
 
-    public Task<IEnumerable<Vehicle>> GetAvailableAsync(
-        string? location = null,
-        string? brand = null,
-        string? fuelType = null,
+    public async Task<IEnumerable<Vehicle>> GetFilteredAsync(
+        int? ownerId = null,
+        string? status = null,
         decimal? minPrice = null,
-        decimal? maxPrice = null)
+        decimal? maxPrice = null,
+        string? district = null)
     {
         var query = _context.Vehicles.AsQueryable();
 
-        if (!string.IsNullOrEmpty(location)) query = query.Where(v => v.Location.Address.Contains(location));
-        if (!string.IsNullOrEmpty(brand)) query = query.Where(v => v.Brand == brand);
-        if (!string.IsNullOrEmpty(fuelType)) query = query.Where(v => v.FuelType == fuelType);
-        if (minPrice.HasValue) query = query.Where(v => v.DailyPrice.Amount >= minPrice.Value);
-        if (maxPrice.HasValue) query = query.Where(v => v.DailyPrice.Amount <= maxPrice.Value);
+        if (ownerId.HasValue) 
+            query = query.Where(v => v.OwnerId == ownerId.Value);
+        if (!string.IsNullOrEmpty(status)) 
+            query = query.Where(v => v.Status == status);
+        if (minPrice.HasValue) 
+            query = query.Where(v => v.DailyPrice.Amount >= minPrice.Value);
+        if (maxPrice.HasValue) 
+            query = query.Where(v => v.DailyPrice.Amount <= maxPrice.Value);
+        if (!string.IsNullOrEmpty(district)) 
+            query = query.Where(v => v.Location.District.Contains(district));
 
-        return query.AsNoTracking().ToListAsync().ContinueWith(t => t.Result.AsEnumerable());
+        return await query.AsNoTracking().ToListAsync();
     }
 
-    public Task<Vehicle?> GetByIdAsync(Guid id) =>
-        _context.Vehicles.AsNoTracking().FirstOrDefaultAsync(v => v.Id == id);
+    public async Task<Vehicle?> GetByIdAsync(int id)
+    {
+        return await _context.Vehicles.AsNoTracking().FirstOrDefaultAsync(v => v.Id == id);
+    }
 
     public async Task AddAsync(Vehicle vehicle)
     {
@@ -54,13 +67,13 @@ public class VehicleRepository : IVehicleRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var vehicle = await _context.Vehicles.FindAsync(id);
-        if (vehicle != null)
-        {
-            _context.Vehicles.Remove(vehicle);
-            await _context.SaveChangesAsync();
-        }
+        if (vehicle == null) return false;
+        
+        _context.Vehicles.Remove(vehicle);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }
