@@ -116,14 +116,11 @@ else
 {
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy(corsPolicyName, policy =>
+        options.AddPolicy("AllowAll", policy =>
         {
-            policy.WithOrigins(
-                    "http://localhost:5173",
-                    "https://moveo-backend-production.up.railway.app"
-                )
-                .AllowAnyHeader()
-                .AllowAnyMethod();
+            policy.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
         });
     });
 }
@@ -134,7 +131,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     if (string.IsNullOrEmpty(connectionString))
         throw new InvalidOperationException("Database connection string is not set.");
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+    
+    // Usar versión fija en lugar de AutoDetect para evitar errores de conexión al iniciar
+    options.UseMySql(connectionString, 
+                     new MySqlServerVersion(new Version(8, 0, 21)),
+                     mySqlOptions =>
+                     {
+                         // Reintentar conexión si falla (útil en Railway)
+                         mySqlOptions.EnableRetryOnFailure(
+                             maxRetryCount: 5,
+                             maxRetryDelay: TimeSpan.FromSeconds(10),
+                             errorNumbersToAdd: null);
+                     })
            .LogTo(Console.WriteLine, LogLevel.Information)
            .EnableSensitiveDataLogging()
            .EnableDetailedErrors();
@@ -150,8 +158,11 @@ builder.Services.AddScoped<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // JWT Authentication
-var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
-if (jwtSettings != null && !string.IsNullOrEmpty(jwtSettings.Secret))
+var jwtSecret = builder.Configuration["JwtSettings:Secret"];
+var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
+var jwtAudience = builder.Configuration["JwtSettings:Audience"];
+
+if (!string.IsNullOrEmpty(jwtSecret) && !string.IsNullOrEmpty(jwtIssuer) && !string.IsNullOrEmpty(jwtAudience))
 {
     builder.Services.AddAuthentication(options =>
     {
@@ -163,16 +174,20 @@ if (jwtSettings != null && !string.IsNullOrEmpty(jwtSettings.Secret))
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
             ValidateIssuer = true,
-            ValidIssuer = jwtSettings.Issuer,
+            ValidIssuer = jwtIssuer,
             ValidateAudience = true,
-            ValidAudience = jwtSettings.Audience,
+            ValidAudience = jwtAudience,
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
         };
     });
     builder.Services.AddAuthorization();
+}
+else
+{
+    Console.WriteLine("⚠️ JWT Settings no configurados correctamente");
 }
 
 // ------------------------- UserManagement Dependencies -------------------------
@@ -239,7 +254,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // ------------------------- Middleware -------------------------
-app.UseCors(corsPolicyName);
+app.UseCors("AllowAll");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
