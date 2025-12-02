@@ -100,30 +100,19 @@ builder.Services.AddSwaggerGen(options =>
 
 // ------------------------- CORS -------------------------
 var corsPolicyName = "AllowMoveoFrontend";
-if (builder.Environment.IsDevelopment())
+builder.Services.AddCors(options =>
 {
-    builder.Services.AddCors(options =>
+    options.AddPolicy(corsPolicyName, policy =>
     {
-        options.AddPolicy(corsPolicyName, policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+        policy.WithOrigins(
+                  "https://moveo-frontend-0sbk.onrender.com",
+                  "http://localhost:5173",
+                  "http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
-}
-else
-{
-    builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("AllowAll", policy =>
-        {
-            policy.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
-    });
-}
+});
 
 // ------------------------- DbContext & MySQL -------------------------
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -254,7 +243,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // ------------------------- Middleware -------------------------
-app.UseCors("AllowAll");
+app.UseCors("AllowMoveoFrontend");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
